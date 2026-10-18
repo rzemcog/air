@@ -1,19 +1,24 @@
-# START HERE: Agents Policies / workflow handoff (18.10.2026)
+# START HERE: самодостаточный handoff (18.10.2026)
 
-**Основной фокус:** исправить delivery/recovery правил в Codex Desktop Windows. **Zapret Maintainer = PAUSED_BY_USER**, не возобновлять ни AC, ни роутер без отдельного поручения.
+**Это единственный нужный архив для новой сессии.** Все ссылки на локальные evidence ниже указывают на файлы внутри него. Предыдущие архивы отдельно прикладывать не нужно.
 
-## Порядок чтения (экономия контекста)
+## Читай только следующее при старте
 
-1. `HANDOFF_COMPACT_RU.md` (главный рабочий контекст).
-2. `02_DECISIONS/ARCHITECTURE_DECISIONS_RU.md` (утверждения/гипотезы/отложенные идеи).
-3. `01_CURRENT/AGENTS_POLICIES_TZ_RU.md` (ТЗ plugin) и `01_CURRENT/output-policy.md` (утверждённый артефакт).
-4. `NEXT_SESSION_PROMPT_RU.md` для старта реализации.
+1. `HANDOFF_COMPACT_RU.md` — актуальный фактологический статус и следующий шаг.
+2. `02_DECISIONS/ARCHITECTURE_DECISIONS_RU.md` — утверждённые решения, альтернативы, гипотезы, отложенные направления.
+3. `01_CURRENT/AGENTS_POLICIES_TZ_RU.md` — исполнимое ТЗ.
+4. `01_CURRENT/output-policy.md` — **согласованный** файл, установка на пользовательском компьютере не подтверждена.
 
-**Только если возник конкретный вопрос**: `HISTORY/EVOLUTION_GRAPH.md`, `04_REFERENCES/*`, `03_EVIDENCE/*`, `git diff`, большой evidence-архив по `03_EVIDENCE/RAW_SOURCE_INDEX.md`.
+`NEXT_SESSION_PROMPT_RU.md` — готовый промпт. `HISTORY/EVOLUTION_GRAPH.md` + `.git` — эволюция решений и документные diff; это **реконструированная**, не оригинальная Git-история.
 
-## Важно
+## Что хранится, но не читается по умолчанию
 
-- `.git/` является **синтетической реконструкцией сохранившихся версий**, не оригинальной Git-историей машины пользователя. Читать `GIT_HISTORY_NOTICE.md` при использовании git evidence.
-- `04_REFERENCES/bootstrap/` и `shared-historical/` = прежние/предложенные snapshots. Не устанавливать поверх актуальных `~/.agents` без сравнения.
-- `01_CURRENT/output-policy.md` = **согласованный артефакт**, но его установка в пользовательскую систему не подтверждена.
-- Полные 10-часовые логи умышленно исключены из лёгкого handoff. Размер архива ≠ размер model context; контекст расходуется при чтении. Эта структура избегает лишнего чтения.
+- `03_EVIDENCE/RAW_SOURCE_INDEX.md` указывает на **встроенные** полные журналы, D1 и 24h evidence.
+- `05_PRIMARY_EVIDENCE/FINAL_10H_JSONL/` — 65 оригинальных JSONL, распакованных для адресного чтения.
+- `05_PRIMARY_EVIDENCE/PREVIOUS_D1_SESSIONS/` — ранее полученные D1 JSONL.
+- `05_PRIMARY_EVIDENCE/ARCHIVED_24H/` — архив ещё более раннего 24h расследования, включён физически, не обязателен к чтению.
+- `06_HISTORICAL_REFERENCES/` — уникальные исторические policies/skills/аудиты/тесты/ТЗ с манифестом путей.
+
+**Zapret Maintainer = PAUSED_BY_USER.** НЕ возобновлять `/goal`, AC, SSH-модификации или тесты на роутере. Следующий этап — только `Agents Policies` и исправление agent workflow.
+
+Полная исходная история работы на пользовательской машине, её текущие исходники и installed ~/.agents не доступны в этом архиве; все местные snapshots указаны как historical/proposed. Не считать реконструированную `.git` подтверждением выполнения операций на роутере.

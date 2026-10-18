@@ -11,3 +11,5 @@
 §2 утверждён; §3 Ultracave без новых правок; provenance уже принят. Пиши minimal patch с тестами и rollback, не создавай другой agent framework. Root по умолчанию координатор, независимая реализация и тесты делегируются субагентам; сам интегрирует. В первую очередь изучить actual installed state и upstream code; для smoke использовать только безопасный isolated test project.
 
 Goal Observer/Agent Audit/You Should Know/MCP wrapper/UI отложены. Результат: installable plugin, точные изменения, unit/integration/e2e tests, evidence model-context delivery отдельно от соблюдения правил, состояние/rollback/остаточные gaps. Не заявляй успех без end-to-end проверки.
+
+Все необходимые source/evidence для выборочной проверки находятся в ТОМ ЖЕ ZIP. Не запрашивай дополнительные архивы только для восстановления уже описанного контекста. Не читай большие сырые логи без конкретной задачи.
