@@ -1,0 +1,24 @@
+--- old/reference/output-policy.md
++++ candidate/output-policy.md
+@@ -14,9 +14,11 @@
+ 
+ ## 2. Human progress
+ 
+-Use the standard `caveman` compression style for human-visible progress. Keep normal grammar and enough context to understand the change and its relevance. Progress is event-driven: report a material finding, changed hypothesis, completed consequential stage, confirmed blocker, significant risk, or meaningful deviation. Preserve the active intent when omission would make the update ambiguous.
++Apply the `caveman` style **inline to each human-visible progress message**, without activating its persistent session mode. Lead with a material result or the current task intent. Use short, natural sentences, one idea per sentence, and direct wording. Remove greetings, filler, routine narration, repeated facts, and decorative formatting. Preserve clear grammar, negation, conditions, uncertainty, and exact technical details. Do not announce a Caveman mode or duplicate the message in another style.
+ 
+-Do not narrate routine tool calls, file reads, searches, commands, ordinary successful checks, or obvious next steps. Do not repeat a previously reported state. Prefer a short natural sentence; apply any higher-priority platform-required progress cadence without padding messages with invented news.
++Expose the **current task-level intent**: what the agent is trying to establish or achieve, and why. For nontrivial multi-step work, give one brief initial intent update before substantive execution, after required instruction loading, when the host permits progress messages. This update need not contain findings. Subsequent optional updates are event-driven: a material finding, changed hypothesis or approach, consequential milestone, confirmed blocker, significant risk, or meaningful deviation. Connect the event to the active intent and next consequential action when needed to make the direction clear.
++
++Do not narrate routine tool calls, file reads, searches, commands, ordinary successful checks, or lists of obvious next steps. Explain a consequential next action and its purpose when it clarifies the direction. Prefer one or two short sentences per update; use more only when accuracy or a mandatory status requires it. Do not repeat previously reported state. Follow any higher-priority platform-required progress cadence without padding messages with invented news.
+ 
+ ## 3. Agent-facing output
+ 
+@@ -46,6 +48,6 @@
+ 
+ ## 6. Mode isolation and fallback
+ 
+-Apply routing per output. Do not activate or switch a persistent session-wide Caveman mode merely to format a single progress message, agent message, or artifact. Use specialized skills through the host's **verified** loading and invocation mechanism; names in a policy do not themselves prove automatic loading. Respect any explicitly selected mode or output contract that has higher applicable priority.
++Apply routing per output. Before the first human progress message, read the installed `caveman/SKILL.md` for its style rules; before the first agent-facing natural-language output, read `ultracave/SKILL.md`. Use the verified skill-file location for the current host (normally `~/.agents/skills/<name>/SKILL.md`). Read once per session unless the file changes or its content is incomplete in context. **Reading is not invoking**: treat session-wide persistence and mode-switch instructions as inactive unless the user explicitly invokes that mode. Do not activate or switch a persistent session-wide Caveman mode merely to format a single progress message, agent message, or artifact. Names in a policy do not themselves prove automatic loading. Respect any explicitly selected mode or output contract that has higher applicable priority.
+ 
+ If isolated invocation cannot be established, follow the required compression and presentation rules directly for that output rather than claiming the skill ran. If specialized formatting is unavailable, retain the required meaning and deliverable contract using supported capabilities. If an exact output requirement cannot be met, disclose the consequential limitation; do not claim successful delivery. General execution safeguards remain effective regardless of the formatting mechanism.
