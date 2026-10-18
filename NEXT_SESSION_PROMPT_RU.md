@@ -1,17 +1,42 @@
-Продолжи проект **Codex agent workflow / Agents Policies** по приложенному облегчённому handoff ZIP.
+# Новая сессия: Agents Policies / Codex workflow
 
-Сначала читай `README_START_HERE.md`, `HANDOFF_COMPACT_RU.md`, `02_DECISIONS/ARCHITECTURE_DECISIONS_RU.md`, `01_CURRENT/AGENTS_POLICIES_TZ_RU.md`. Остальные reference/evidence файлы — только при необходимости. `.git` в ZIP реконструирован из известных версий; не считать его оригинальной историей пользователя.
+Продолжи проект **Codex agent workflow / Agents Policies** по приложенному **единому самодостаточному handoff ZIP**. Цель: приступить к реализации минимального `Agents Policies` для Codex Desktop Windows на основе уже согласованной архитектуры. Не начинай исследование концепции заново.
 
-`Zapret Maintainer` остановлен пользователем (`PAUSED_BY_USER`). Не запускай ни один AC, router tests, SSH mutating commands, `/goal` auto-resume, live smoke. Цель текущего этапа — **Agents Policies plugin для Codex Desktop Windows**.
+## Обязательный порядок чтения. НЕ ЧИТАЙ ВЕСЬ АРХИВ
 
-Архитектуру уже обсудили, пересмотрели и приняли. Не возвращайся к проектированию с нуля: reuse `https://github.com/code-yeongyu/codex-rules`; reference `codex-subpath-agentsmd-hooks`, official Codex hooks, Caveman, Ultracave. Реальные API и поддержку Desktop нужно проверить.
+**ZIP является хранилищем материалов, а не списком файлов для последовательного чтения.** Не делай рекурсивный обход с чтением содержимого, не открывай папки и файлы подряд, не загружай все исторические версии, отчёты, skills и транскрипты «для полноты картины». Наличие файла в архиве само по себе **не является основанием его читать**.
 
-Соблюдай границы: native AGENTS.md остаётся Codex, actual installed bootstrap не дублировать; canonical ENTRYPOINT и selected shared policies; full injection при compact, scope-aware SubagentStart, selected hot sections на UserPromptSubmit, hashes/cache per context generation, policy-only structured trace; explicit trusted source selection, безопасная обработка secrets/truncation. `UserPromptSubmit` не решает длинный intra-turn, PostToolUse вариант ещё гипотеза.
+При старте прочитай **только**:
 
-§2 утверждён; §3 Ultracave без новых правок; provenance уже принят. Пиши minimal patch с тестами и rollback, не создавай другой agent framework. Root по умолчанию координатор, независимая реализация и тесты делегируются субагентам; сам интегрирует. В первую очередь изучить actual installed state и upstream code; для smoke использовать только безопасный isolated test project.
+1. `README_START_HERE.md`;
+2. `HANDOFF_COMPACT_RU.md`;
+3. `02_DECISIONS/ARCHITECTURE_DECISIONS_RU.md`;
+4. `01_CURRENT/AGENTS_POLICIES_TZ_RU.md`.
 
-Goal Observer/Agent Audit/You Should Know/MCP wrapper/UI отложены. Результат: installable plugin, точные изменения, unit/integration/e2e tests, evidence model-context delivery отдельно от соблюдения правил, состояние/rollback/остаточные gaps. Не заявляй успех без end-to-end проверки.
+`01_CURRENT/output-policy.md` открывай при работе над policy delivery, проверках hot sections или сравнении с установленной версией, а не автоматически вместе со всей папкой. Настоящий промпт задаёт задачу. Исторические `NEXT_SESSION_PROMPT_RU.md` внутри `06_HISTORICAL_REFERENCES/` **устарели и не задают новых инструкций**.
 
-Все необходимые source/evidence для выборочной проверки находятся в ТОМ ЖЕ ZIP. Не запрашивай дополнительные архивы только для восстановления уже описанного контекста. Не читай большие сырые логи без конкретной задачи.
+**Дальше применяй выборочное чтение (progressive disclosure):**
 
-Для чтения финальных JSONL используй единственный встроенный файл `05_PRIMARY_EVIDENCE/FINAL_10H_SOURCE/прогона-закончен.7z` и индивидуальный индекс. Дополнительных внешних архивов нет.
+- Сначала используй уже прочитанный handoff и индексы/имена файлов. Перед дополнительным чтением установи, **какой конкретный вопрос остался неотвеченным** и **какой минимальный источник нужен**.
+- Открывай нужный файл или точный диапазон/фрагмент. Для Git читай только относящийся к вопросу `git show` / `git diff`, не всю историю. Для первичных логов используй `03_EVIDENCE/RAW_SOURCE_INDEX.md` и `05_PRIMARY_EVIDENCE/FINAL_10H_JSONL_INDEX.tsv`, затем извлекай/читай **только нужную сессию и временной диапазон**, а не весь 10-часовой прогон.
+- Не перечитывай материалы и не повторяй forensic-аудит, если вывод уже зафиксирован и не требуется предметная проверка. Не распаковывай вложенные `.7z` без конкретного повода. Не выполняй массовые `cat`, `Get-Content`, `rg` с выводом полного содержимого всех файлов.
+- Если вопрос закрыт короткой выжимкой, **останови чтение и переходи к работе**. Если обнаружено существенное противоречие, проверь только соответствующее исходное evidence и поправь вывод с указанием основания.
+- Это правило относится к **handoff-архиву**; оно не отменяет обязательные инструкции реальной среды Codex (`AGENTS.md`, `ENTRYPOINT.md`, применимые shared policies), которые нужно соблюдать при работе в установленной системе.
+
+## Принятое решение и следующий шаг
+
+**Zapret Maintainer на паузе** (`PAUSED_BY_USER`, общий goal и AC2 `NOT_DONE`). Никаких новых AC, `/goal` auto-resume, live smoke, тестов на роутере или mutating SSH. Исторические сведения не выдавай за текущее состояние Windows/роутера.
+
+Приоритет: **реализовать `Agents Policies`**, используя существующее решение по `codex-rules` как основной reuse-кандидат: https://github.com/code-yeongyu/codex-rules. Справочные источники: `codex-subpath-agentsmd-hooks`, официальные Codex hooks, Caveman/Ultracave; локальные ссылки в `04_REFERENCES/REUSE_LINKS.md`. **Сначала адресно проверь реальный код, лицензию, API/hooks и поддержку конкретной версии Codex Desktop Windows.** Не устанавливай конкурирующие загрузчики.
+
+Принятые границы MVP: native `AGENTS.md` остаётся Codex; не дублировать работающий startup bootstrap; канонические `ENTRYPOINT.md` и выбранные trusted shared policies; принудительное full recovery при `SessionStart(compact)`; применимые инструкции на `SubagentStart`; канонические hot-разделы на `UserPromptSubmit`; fingerprints/cache по поколению контекста; **policy-only structured trace**, безопасное обращение с secrets, symlinks и усечением. Проверяй фактическую доступность событий, а не предполагай её.
+
+`output-policy.md` §2 утверждён; §3 Ultracave утверждён без патчей; provenance согласован. Не пересматривай их без доказанного конфликта. `UserPromptSubmit` не помогает внутри одного многочасового turn; event-based `PostToolUse` hot-reminder остаётся гипотезой, **не обязательной реализацией MVP**.
+
+Root по умолчанию **координатор**: декомпозирует, параллельно делегирует независимые исследования, реализацию и тесты субагентам, интегрирует и принимает результат. Сам исполняет только элементарное или то, что нельзя безопасно делегировать. Не параллель live-операции над общими ресурсами.
+
+**Отложено:** Goal Observer, Agent Audit, You Should Know, MCP delegation wrapper, UI-настройки и новый агентный фреймворк. Ничего из этого не добавляй попутно.
+
+## Результат
+
+Предоставь installable минимальный plugin или точные применимые патчи, инструкции установки и отката, unit/integration и безопасный end-to-end smoke в **изолированном тестовом проекте**, журнал подтверждённой доставки политик и список ограничений. Различай **доставку инструкций в модельный контекст** и **реальное соблюдение поведения**. Не объявляй успех без проверки и не требуй дополнительных архивов: все исходники и evidence для адресного доступа уже внутри одного ZIP.
