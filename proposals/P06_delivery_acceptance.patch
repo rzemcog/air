@@ -1,0 +1,11 @@
+--- a/docs/05_IMPLEMENTATION_TZ_RU.md
++++ b/docs/05_IMPLEMENTATION_TZ_RU.md
+@@ -121,6 +121,8 @@
+ | **AC09** | Secure install/rollback, trace/privacy, Windows runtime | Isolated before/after diff, disabled behavior, path/symlink/UTF-8 tests, no plaintext secrets | H21/H24 |
+ | **AC10** | Воспроизводимая сборка, reuse/license provenance, полный отчёт по blockers | pinned revisions, tests with exact outputs, reviewer report, clean Git diff | Все |
+ 
++**Предложение P06:** `model-visible` AC05/AC06 являются воротами для статуса «работающий AIR plugin»; unit-only готовность parser/cache никогда не переименовывать в end-to-end DONE. При этом компиляция и независимые эксперименты AC01–AC04 выполняются параллельно даже при `BLOCKED_DESKTOP_HOOK`, без отдельного этапа handoff.
++
+ **Full `DONE`:** выполнены AC01–AC10, критичные host gates доказаны на целевой Windows Codex Desktop. Иначе `PARTIAL` по реально законченным AC + `BLOCKED_*` по зависимым. Не переименовывать блокирующую ветку в успех только потому, что тестовый CLI или unit fixture прошёл.
+ 
+ ### Соглашения о точности

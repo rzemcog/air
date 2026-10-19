@@ -1,0 +1,11 @@
+--- a/docs/02_ADR_RU.md
++++ b/docs/02_ADR_RU.md
+@@ -19,6 +19,8 @@
+ 
+ ## ADR-006 — Rule structure
+ **ACCEPTED direction, details CANDIDATE.** `Rule` вместо Instruction Unit. Отвергнуты BDD GIVEN/WHEN/THEN, лишние `subject`, `target`, `target_types`, универсальный `predicate` и обязательные ручные IDs. Пример рабочей структуры: `key?`, `modality`, `operation`, `parameters?`, `applies_if?`, `description?`. `modality` рабочие значения: `require|forbid|permit|prefer`. `description` — natural language opaque для deterministic core. Type constraints берутся из Vocabulary; не зарегистрированный symbol — ошибка, а не повод LLM придумать новый. `applies_if` — булева декларативная логика применимости; формат условий и семантика missing facts требуют фиксации.
++
++**Предложение P05 (пока OPEN):** `applies_if` возвращает `true | false | unknown` с явными таблицами Клини для `all/any/not`; при unknown обязательное правило не считается безопасно снятым, а требует `BLOCKED_APPLICABILITY` или отдельного fallback. `permit` означает только явное исключение в пределах совпадающей operation/scope и не создаёт общего разрешения обходить любые запреты.
+ 
+ ## ADR-007 — Граница детерминированности
+ **ACCEPTED.** Deterministic core может parse/validate/canonicalize/typecheck/hash/evaluate known predicates/assemble. LLM читает free-form descriptions и возвращает ограниченные semantic relations; результат валидирует deterministic layer. Модель не модифицирует Canonical Source, authority, scope или symbols. Структурная проверяемость не гарантирует model compliance.

@@ -1,0 +1,13 @@
+--- a/docs/05_IMPLEMENTATION_TZ_RU.md
++++ b/docs/05_IMPLEMENTATION_TZ_RU.md
+@@ -104,7 +104,9 @@
+ 
+ Authored source/config в доверенном указанном пути (candidate `~/.agents/policies.toml`), runtime data в `%LOCALAPPDATA%/AIR` либо `PLUGIN_DATA` при доказанном host контракте. `cache/gpa`, `cache/conflicts`, `sessions`, `trace`. `sessions` не удаляется при cache eviction. File locking/atomic writes + checksum + generation + bounded trace + privacy and safe path resolution. No network/telemetry кроме отдельно разрешённого API запроса выбранного cheap resolver; не хранить raw user prompt в trace.
+ 
+-Измерять: hook median/p95 latency на небольшой тестовой выборке, invocation counts, output bytes/tokens, injected scopes, cache hit ratio, resolver calls, model-visible canary completeness и task compliance отдельно. Performance threshold не изобретать без baseline; дать сравнительные числа и предложить bounded budgets.
++Измерять: hook median/p95 latency на небольшой тестовой выборке, invocation counts, output bytes/tokens, injected scopes, cache hit ratio, resolver calls, model-visible canary completeness и task compliance отдельно.
++
++**Предложение P03:** semantic compilation по возможности выполнять при изменении источников/конфигурации, а не во время каждого model-critical hook. В hook использовать только валидный compiled cache; на miss допускать ограниченный по времени resolver вызов лишь после измерения и явного решения. При таймауте выдавать machine-readable blocker, не тихо инжектировать конфликтный bundle. Performance threshold не изобретать без baseline; дать сравнительные числа и предложить bounded budgets.
+ 
+ ## 7. Acceptance Criteria и проверка инвариантов
+ 

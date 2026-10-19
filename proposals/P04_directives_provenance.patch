@@ -1,0 +1,13 @@
+--- a/docs/01_ARCHITECTURE_RU.md
++++ b/docs/01_ARCHITECTURE_RU.md
+@@ -181,7 +181,9 @@
+   trace/policy-delivery.jsonl            # bounded, no raw bodies
+ ```
+ 
+-Расположение `%LOCALAPPDATA%` архитектурно согласовано; точное имя root-dir и portable handling `PLUGIN_DATA` уточняются host contract. Atomic writes, simultaneous hook concurrency, dedup generation, file locks и recovery после partial write обязательны. Cache entries имеют origin hashes, vocabulary/schema/authority/resolver versions, scope и provenance; при ручных корректировках generated `effective.md` нельзя молча принять за canonical source: correction нужна в отдельном explicit override, привязанном к hash (формат открыт).
++Расположение `%LOCALAPPDATA%` архитектурно согласовано; точное имя root-dir и portable handling `PLUGIN_DATA` уточняются host contract. Atomic writes, simultaneous hook concurrency, dedup generation, file locks и recovery после partial write обязательны.
++
++**Предложение P04:** каждая запись Session Directive должна содержать stable event identity, source turn reference, session/fork lineage, logical event order, exact scope, add/revoke/supersede operation и predecessor fingerprint. Duplicate event idempotent; несовместимый concurrent update → visible conflict, а не last-write-wins. Cache entries имеют origin hashes, vocabulary/schema/authority/resolver versions, scope и provenance; при ручных корректировках generated `effective.md` нельзя молча принять за canonical source: correction нужна в отдельном explicit override, привязанном к hash (формат открыт).
+ 
+ ## 6. Package и host integration
+ 

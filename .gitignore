@@ -1,3 +1,14 @@
-/05_PRIMARY_EVIDENCE/
-/06_HISTORICAL_REFERENCES/
-/MANIFEST_SHA256.tsv
+# Runtime outputs and private evidence are not part of the AIR artifact package.
+node_modules/
+coverage/
+dist/
+.cache/
+.cache-*/
+*.log
+*.jsonl
+*.7z
+*.zip
+*.bak
+.env
+.env.*
+!*.example

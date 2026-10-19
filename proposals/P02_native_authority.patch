@@ -1,0 +1,11 @@
+--- a/docs/01_ARCHITECTURE_RU.md
++++ b/docs/01_ARCHITECTURE_RU.md
+@@ -55,6 +55,8 @@
+ 
+ **Native ownership:** если Codex уже загрузил Agent Profile или `AGENTS.md`, AIR может использовать их как вход резолюции, но не должен повторно отправлять то же содержимое в Delivery Payload. Изменение native source инвалидирует связанные решения. Детерминированный compiler не умеет удалить уже видимые модели native инструкции, если они конфликтуют; это `RUNTIME_GATE`/корректировка источника, а не операция фильтрации текста AIR.
+ 
++**Предлагаемое уточнение (P02):** при обнаружении конфликтующей native инструкции строить `Native Conflict Report` с source location, winning/losing rule, фактическим host role и минимальным author-owned diff. Автоматическая доставка объявляется заблокированной до принятого исправления canonical source и повторного E2E; AIR не пытается «нейтрализовать» native правила дополнительным developer prompt.
++
+ ## 3. Authoring/compilation boundary
+ 
+ ### 3.1 Format Schema, Vocabulary, Policy, Rule

@@ -1,0 +1,11 @@
+--- a/docs/05_IMPLEMENTATION_TZ_RU.md
++++ b/docs/05_IMPLEMENTATION_TZ_RU.md
+@@ -56,6 +56,8 @@
+ **R5 Child scoping.** Real custom subagent with role, project path, task context; verify agent_type/task_name/cwd metadata; isolation native vs AIR; relevant Session Directives; отсутствие дублирования Role Profile и чужих scoped policies.
+ 
+ **R6 UserPromptSubmit modes.** A: side-effect-only update Session State при новой persistent directive, без model output; B: short hot canonical excerpt, сохранение фокуса; C: совместный bounded handler, со временем исполнения и доказательством порядка. Внутри одного длинного turn этот hook не срабатывает повторно. Проверить, кто фактически вызывает cheap model/API и доступен ли он в sync hook.
++
++**R8 Cross-vocabulary candidate recall (PROPOSED).** Построить тестовый корпус пар с различными зарегистрированными символами, но одинаковыми/пересекающимися natural-language descriptions. Сравнить deterministic prefilter-only против bounded semantic retrieval; зафиксировать пропущенные критические пары и latency. Не считать совпадение `operation` достаточным условием полного покрытия конфликтов.
+ 
+ **R7 Limits and failure.** Проверить default `additionalContextLimit`, override (bounded), spill/truncation, latency/timeouts, invalid JSON, permission-denied source, symlink escaping, missing required file, cache corruption, crash during atomic write, restoration after disable.
+ 

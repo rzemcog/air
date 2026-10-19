@@ -1,1 +1,0 @@
-Before the first user-visible message of each task, read and follow `~/.agents/ENTRYPOINT.md` (expand `~` to the user's home directory). Apply its instructions to all later messages, including progress; do not narrate loading or reread unchanged files.
