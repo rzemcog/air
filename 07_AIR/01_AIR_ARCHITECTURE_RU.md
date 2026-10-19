@@ -4,44 +4,44 @@
 **Статус:** консолидированная база по handoff и последующему диалогу, **не** утверждение технической работоспособности.  
 **Назначение:** единый словарь и описание архитектуры для реализации; спорные места явно отмечены `OPEN` или `RUNTIME_GATE`.
 
-## 0. Границы
+## 0. Назначение AIR и архитектурная граница
 
-AIR управляет жизненным циклом управляемых агентных инструкций: обнаружение выбранных источников → проверка → нормализация → разрешение конфликтов → cache → подготовка model-visible payload → доставка/recovery → узкая наблюдаемость.
+**AIR (Agent Instruction Runtime)** управляет жизненным циклом инструкций агента: выбирает источники, проверяет их форму и применимость, разрешает противоречия, сохраняет результаты, подготавливает инструкции для модели и восстанавливает их при изменениях контекста. Первая реализация рассчитана на **Codex Desktop в Windows**.
 
-Текущий host: **Codex Desktop на Windows**. Другие harness рассматриваются как будущие integration targets, но их код не реализуется сейчас. AIR не становится ни RAG, ни memory fabric, ни goal orchestrator, ни security enforcement engine. Zapret Maintainer остановлен пользователем и не возобновляется.
+**Policy отвечает:** «При каких условиях что обязательно, запрещено, разрешено или предпочтительно?»
 
-**Архитектурная граница:** `Policy` определяет применимость и нормативные требования; `Skill` описывает процедуру достижения результата, порядок действий и ветвление исполнительного процесса. В policy-языке нет произвольных действий/циклов/исполняемого кода. Декларативные булевы условия применимости разрешены. Skills продолжают обнаруживаться нативно Codex. Будущий Skill Manager концептуально может войти под umbrella AIR без реализации его сейчас.
+**Skill отвечает:** «Каким способом и в какой последовательности достичь результата?»
 
-## 1. Канонический словарь (не вводить синонимов)
+Отсюда следует разделение языка и исполнения:
 
-| Термин | Единственное значение |
+- **Policy** описывает нормативные ограничения поведения. В неё входят условия применимости и требования к действию или результату.
+- **Skill** описывает процедуру работы: шаги, выбор дальнейших действий, проверку результатов и повторные попытки.
+- **AIR** доставляет применимые инструкции и поддерживает их согласованное состояние. Существующий native skill discovery Codex используется для загрузки навыков.
+
+В будущем **планируется интегрировать в AIR функциональность менеджмента skills**. Текущая работа посвящена policy language, resolution, delivery, восстановлению инструкций и состоянию сессии. Декларативная логика условий (`all/any/not`) входит в policy language; процедурное управление выполнением относится к skills.
+
+## 1. Канонический словарь
+
+Подробные определения, жизненные циклы и примеры находятся в **[`07_GLOSSARY_RU.md`](07_GLOSSARY_RU.md)**. Этот словарь является единым справочником терминов пакета.
+
+| Термин | Значение в AIR |
 |---|---|
-| **AIR** | Agent Instruction Runtime, проектируемая система. |
-| **Canonical Source** | Авторитетный исходный артефакт инструкции, не cache. |
-| **Global Policy (G)** | Глобальная общая политика с установленным scope. |
-| **Project Policy (P)** | Политика проекта/поддерева, независимо от способа доставки. |
-| **Agent Profile (A)** | Специализированные инструкции профиля агента, включая Codex `developer_instructions`. |
-| **User Instruction** | Явное указание пользователя. Текущий prompt и ранее сохранённая директива различаются. |
-| **Session Directive** | Ранее данное указание пользователя, которое продолжает действовать в текущей сессии. |
-| **Session State** | Устойчивое по сессии хранилище директив, их статусов и provenance. Это не LRU cache. |
-| **GPA Resolution** | Результат обработки G+P+A; user instruction не входит в GPA. |
-| **Resolution Overlay** | Внутренняя карта equivalence/conflicts/composition/overrides с provenance; не отправляется рабочему агенту. |
-| **Conflict Decision** | Отдельное кэшируемое решение по конфликту конкретных правил. |
-| **GPA Cache** | Content-addressed cache результатa GPA Resolution. |
-| **Resolution Decision Cache** | Content-addressed cache отдельных решений. |
-| **Rule** | Автором выделенное структурное нормативное правило. Ранее обсуждавшийся `Instruction Unit`. |
-| **Vocabulary** | Свободно расширяемый набор именованных операций/facts/типов, валидный по фиксированной грамматике. |
-| **Format Schema** | Версионированное определение грамматики Vocabulary/Policy документов, поставляемое AIR. |
-| **Policy Graph / IR** | Производное внутреннее представление правил и отношений; не внешняя БД. |
-| **Codex Integration** | Host-specific код для hooks, native scanning, ролей сообщений, trust и путей. Это не обязательный универсальный adapter framework. |
-| **Delivery Plan** | Вычисленный для конкретного host/event план: какие источники доставляются native, какие через AIR. |
-| **Native Source** | Source, чей текст модель получает штатным Codex-механизмом. |
-| **Managed Source** | Source, за доставку которого в данном Delivery Plan отвечает AIR. Не означает больший authority. |
-| **Delivery Payload** | Полный текст, передаваемый AIR конкретным hook; без machine overlay и повторения native bodies. |
-| **Recovery Payload** | Delivery Payload для восстановления состояния после compaction/resume, если оно требуется. |
-| **Policy Trace** | Техническая запись попытки/результата доставки: IDs, hashes, timestamps, event, errors; без raw policy по умолчанию. |
-
-Термины `plugin-owned surviving rules`, `User Overlay`, безусловный `effective bundle` и неопределённое `managed policies` НЕ используются.
+| **Canonical Source** | Выбранный исходный файл или другой авторитетный носитель инструкций; изменения отслеживаются по fingerprint. |
+| **Global Policy (G)** | Общие правила для нескольких проектов и агентных профилей в пределах своего scope. |
+| **Project Policy (P)** | Правила конкретного репозитория, проекта или его поддерева. |
+| **Agent Profile (A)** | Ролевые инструкции специализированного агента, в Codex обычно `developer_instructions`. |
+| **User Instruction / Current User Prompt** | Прямое указание пользователя / текущее сообщение, доставляемое Codex. |
+| **Session Directive** | Пользовательское указание, продолжающее действовать в этой сессии. |
+| **Session State** | Сохраняемое состояние директив с версиями, статусами и происхождением. |
+| **GPA Resolution** | Результат разрешения применимых Global, Project и Agent правил. |
+| **Resolution Overlay / Conflict Decision** | Машинная карта отношений и конкретное решение по одному конфликту. |
+| **GPA Cache / Resolution Decision Cache** | Кэши всего GPA Resolution и отдельных разрешённых конфликтов. |
+| **Format Schema / Vocabulary / Policy / Rule** | Формат документа / объявление понятий / нормативный документ / отдельное правило. |
+| **Policy IR / Graph** | Производное представление структурных правил, источников и отношений. |
+| **Codex Integration / Delivery Plan** | Codex-специфичная интеграция и вычисленная схема доставки применимых правил. |
+| **Native Source / Managed Source** | Источник, доставляемый Codex / источник, доставляемый AIR. |
+| **Delivery Payload / Recovery Payload** | Готовые инструкции для hook / их набор для восстановления состояния. |
+| **Policy Trace** | Диагностические записи о попытках и подтверждениях доставки. |
 
 ## 2. Источники и authority
 
@@ -99,7 +99,7 @@ rules:
 
 Детерминированность структуры не даёт автоматической гарантии, что модель-исполнитель последует инструкциям. AIR измеряет delivery и compliance раздельно.
 
-**Операции и факты:** не закрытый всемирный список. Формат и регистрация символов детерминированы; набор vocabulary свободно расширяем и версионируем. Имя `test.run` существует только если оно зарегистрировано. Поля типов параметров проверяются по declaration словаря, а не угадываются AIR. Возможны extension vocabularies. Unresolved symbol → validation error, без автоматического создания словаря через LLM.
+**Операции и факты:** синтаксис и регистрация символов детерминированы; содержимое vocabulary свободно расширяется и версионируется. Имя `test.run` существует только если оно зарегистрировано. Поля типов параметров проверяются по declaration словаря, а не угадываются AIR. Возможны extension vocabularies. Unresolved symbol → validation error, без автоматического создания словаря через LLM.
 
 `modality`: рабочий словарь `require`, `forbid`, `permit`, `prefer` (смысл `permit` как исключения требует точной формализации). `applies_if` поддерживает декларативные `all/any/not` и типизированные сравнения с известными facts, но не исполняет алгоритмы. `description` — opaque natural language. Универсальные `subject`, `target`, BDD GIVEN/WHEN/THEN и обязательные ручные IDs отвергнуты; `key` опционален. Стабильный технический handle + отдельный content hash.
 
@@ -107,7 +107,7 @@ rules:
 
 Policy Graph — **производная структура памяти**, а не Neo4j или отдельный сервис. Узлы: Sources, Rules; рёбра: contains, equivalent, conflicts, refines, overrides с provenance. Не весь граф обязан быть DAG: циклы возможны у эквивалентности/конфликтов; запрет циклов применим только к будущим действительно зависимостным directed edge types, если они понадобятся. Стабильные идентификаторы Rules и hashes дают потенциальное переиспользование Conflict Decisions. Переносимость решения зависит от неизменности scope и релевантного контекста: нельзя считать пару hash полностью достаточной при появлении третьего правила.
 
-## 4. Runtime flow (не смешивать состояния)
+## 4. Runtime flow
 
 ### 4.1 Initial session
 
@@ -177,7 +177,7 @@ Inherited Root context ≠ доказательство работы `SubagentSt
 %LOCALAPPDATA%/AIR/
   cache/gpa/<fingerprint>/{resolution.json,effective.md}
   cache/conflicts/<fingerprint>.json
-  sessions/<session-id>.json             # НЕ cache, не удалять LRU при resumable session
+  sessions/<session-id>.json             # durable state на протяжении resumable session
   trace/policy-delivery.jsonl            # bounded, no raw bodies
 ```
 
@@ -198,12 +198,12 @@ Inherited Root context ≠ доказательство работы `SubagentSt
 7. У agent-исполнителя нет обязанности читать overlay/trace/исходники ради текущего исполнения; ему доставляется итоговый применимый текст.
 8. Session State отделён от GPA cache и сохраняется при resumable session.
 9. Отсутствие гарантированного host transport → доказательный blocker соответствующего acceptance, не `DONE`.
-10. Первичные data Zapret не меняются; реальные `.agents` пользователя только после permission preflight + backup + rollback.
+10. Изменения в действующей пользовательской `.agents` требуют permission preflight, резервной копии, проверяемого diff и rollback.
 
-## 8. Открытые вопросы с указанием владельца решения
+## 8. Открытые вопросы и владельцы решений
 
 - **RUNTIME_GATE:** поддержка hooks в текущей Windows Desktop, full context/truncation, message precedence, native AGENTS/Agent Profile reloading, subagents, `UserPromptSubmit` side effect. Владелец: агент-исследователь, затем user approval при несовместимости.
 - **SCHEMA_GATE:** точная grammar/types/`permit`/условия `unknown fact`, поддержка частично natural-language только в description, stable handles. Владелец: пользователь + архитектурный review по отчёту прототипа, без скрытых расширений.
 - **TRANSPORT_GATE:** conflicting native higher authority и очистка global bootstrap. Владелец: пользователь после evidence.
 - **UX_GATE:** формат ручных patches/corrections и их migration при изменении source hash. Владелец: пользователь после практического mockup.
-- **OUT_OF_SCOPE:** настоящий Skill Manager, universal manifest DSL, новые daemon/MCP/DB, enforcement, Observation/Goal/Judge, arbitrary bytecode.
+- **ПЛАНИРУЕМОЕ РАСШИРЕНИЕ:** функциональность менеджмента skills в AIR. Состав функций и формат интеграции согласуются отдельно.

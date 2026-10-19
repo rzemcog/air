@@ -3,10 +3,10 @@
 **Статус:** консолидация прежних ADR и пользовательских решений текущего диалога; `ACCEPTED` означает согласие на уровне концепции, не доказательство готового кода. `CANDIDATE` и `OPEN` не заменять на `ACCEPTED` автоматически. Старый handoff хранится в `REFERENCE_SNAPSHOTS` и не редактировался.
 
 ## ADR-001 — Название и границы системы
-**ACCEPTED.** Новое название **AIR, Agent Instruction Runtime** вместо `Agents Policies`; первая реализация Codex Desktop Windows. В будущем AIR может объединить skill lifecycle manager, но текущая версия решает доставку/восстановление/резолюцию инструкций и не управляет skill-процедурами.
+**ACCEPTED.** Название системы — **AIR (Agent Instruction Runtime)**. Первая реализация — Codex Desktop на Windows: разрешение, доставка и восстановление инструкций. В будущем планируется интеграция функциональности менеджмента skills.
 
-## ADR-002 — Policy vs Skill
-**ACCEPTED.** Policy декларирует, при каких обстоятельствах какое поведение обязательно, запрещено, разрешено или предпочтительно. Skill задаёт исполнение: процедуры, последовательность шагов, ветвления и циклы. Native discovery skills сохраняется, дополнительный capability-ID registry для навыков отклонён. Жёсткие относительные пути внутри skill нормативно нежелательны. Универсальный skill manager отложен.
+## ADR-002 — Граница Policy и Skill
+**ACCEPTED.** **Policy отвечает:** «При каких условиях что обязательно, запрещено, разрешено или предпочтительно?» **Skill отвечает:** «Каким способом и в какой последовательности достичь результата?» Политика задаёт ограничения поведения через декларативные условия и модальности. Skill описывает выполнение и последовательность действий. Для навыков AIR использует native discovery Codex; переносимость ссылок между skills обеспечивается существующими механизмами маршрутизации.
 
 ## ADR-003 — Логические приоритеты
 **ACCEPTED as semantic intent; RUNTIME_GATE for enforcement.** Current User > active Session Directives > Agent Profile > Project > Global. В частности, Agent Profile выше Project. `silent` автоматически применяет контракт, `interactive` выясняет существенные конфликты с пользователем. Authority System/Developer Codex остаётся вне пользовательской модели. Запрещено считать модельную текстовую декларацию способной поменять протокольные message roles.
@@ -36,7 +36,7 @@
 **ACCEPTED model, RUNTIME_GATE mechanics.** Session Directives отдельно от GPA и не входят в reusable GPA cache. Текущий user prompt доставляется Codex напрямую; persistent директивы извлекаются дешёвой моделью и фиксируются как Session State для compaction, resume, subagent. Side-effect-only `UserPromptSubmit` — рабочая гипотеза, а не доказанный Desktop contract. `UserPromptSubmit` hot excerpt из прежнего handoff всё ещё утверждён и требует отдельного согласования с новой схемой (см. ADR-013).
 
 ## ADR-012 — Persistence/Trace
-**ACCEPTED direction.** Authored sources/config отдельно от cache/session state. Windows root `%LOCALAPPDATA%` предпочтителен, конечное имя и выбор между ним/`PLUGIN_DATA` после проверки. `cache/gpa`, `cache/conflicts`, `sessions`, `trace`. Session State не LRU. Атомарная запись; no raw bodies in trace, ограниченная ретенция, fingerprints/generation.
+**ACCEPTED direction.** Authored sources/config отдельно от cache/session state. Windows root `%LOCALAPPDATA%` предпочтителен, конечное имя и выбор между ним/`PLUGIN_DATA` после проверки. `cache/gpa`, `cache/conflicts`, `sessions`, `trace`. Session State сохраняется на протяжении доступной для resume сессии. Атомарная запись; trace содержит служебные метаданные с ограниченной ретенцией; fingerprints/generation отслеживаются.
 
 ## ADR-013 — Hooks and recovery
 **ACCEPTED intent, RUNTIME_GATE execution.** На `SessionStart(compact)` обязателен актуальный Recovery Payload при поддерживаемом hook; `PostCompact` не заменяет доставку. `SubagentStart` имеет scoped delivery; `UserPromptSubmit` в ранее утверждённой модели доставляет short canonical hot sections. В последующем обсуждении предложен side-effect-only handler, вызывающий separate user-directive resolver. Совместимость двух задач, порядок, timing, latency и необходимость дополнительной инъекции оставлены открытыми. In-turn `PostToolUse` — гипотеза, без подтверждения не включать.
@@ -50,8 +50,8 @@
 ## ADR-016 — Legacy policies и миграция
 **ACCEPTED direction, implementation OPEN.** Действующие `agent-policy.md` и `instruction-conflict-resolution` skill изменяемы: пользователь разрешил адаптацию. Сама структурированная политика становится canonical после явной миграции, legacy Markdown не нужно вечно поддерживать как равноправный DSL. **До cutover** нельзя потерять действующие правила или скрыто переписать исходные инструкции; migration diff/review/rollback обязательны. Native bootstrap очищается только после подтверждённого transport.
 
-## ADR-017 — Практическое состояние проекта
-**FACT.** AIR не реализован и Windows Desktop поведение экспериментально не проверено. Zapret Maintainer остановлен пользователем; не возобновлять. Предыдущий `Agents Policies` handoff содержит исторически утверждённые подходы, новые решения этой беседы уточняют их, а не являются доказательством готовности.
+## ADR-017 — Статус AIR и происхождение решений
+**FACT.** AIR находится в состоянии проектирования; результаты Windows Desktop экспериментов ещё ожидаются. Предыдущий handoff сохраняет согласованные исходные решения, последующие ADR уточняют архитектуру и условия проверки.
 
 ## Обязательные открытые решения перед `DONE`
 

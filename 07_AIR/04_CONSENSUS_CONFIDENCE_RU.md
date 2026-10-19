@@ -6,8 +6,8 @@
 
 | Тезис | Статус | Комментарий |
 |---|---|---|
-| AIR = Agent Instruction Runtime, более широкая платформа; Windows Codex first | CONSENSUS | Future Skill Manager возможен, не реализуем сейчас. |
-| Policy — декларация ограничений; Skill — процедурное исполнение | CONSENSUS | Главная граница. Декларативные conditions разрешены; bytecode/loops не сейчас. |
+| AIR = Agent Instruction Runtime; первая реализация в Codex Desktop Windows | CONSENSUS | В будущем планируется интеграция функциональности менеджмента skills. |
+| Policy формулирует применимость и нормативные требования; Skill задаёт способ и последовательность исполнения | CONSENSUS | Policy: «при каких условиях что требуется/запрещено/разрешено/предпочтительно?» Skill: «как и в какой последовательности достичь результата?» |
 | Текущий user > Session Directives > Agent > Project > Global | CONSENSUS on intended authority | Не доказан технически из-за developer-role транспорта. |
 | Отдельный cheap resolver, Root не анализирует дубликаты | CONSENSUS | Нет self-confidence scoring; cache + inspection/manual correction. |
 | GPA cache и Conflict Decision cache | CONSENSUS | Состояние user directives отдельное per session. |
@@ -22,7 +22,6 @@
 | Agent Plugins manifest учитывать сейчас | CONSENSUS | Не означает, что AIR runtime semantics стандартизованы Agent Plugins. |
 | `SessionStart(compact)` full recovery, scoped child, hot reminders | LEGACY ACCEPTED | Новый дизайн user-directive side effect вызвал конфликт назначений `UserPromptSubmit`, требует решения. |
 | Rules manifest / полноценный Skill Manager | DEFERRED | Только архитектурно не закрывать будущие пути. |
-| Запрет запускать Zapret Maintainer | HARD CONSTRAINT | User-paused. |
 
 ## B. Точно НЕ работает как утверждалось (контракт или логическое противоречие)
 

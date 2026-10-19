@@ -3,11 +3,11 @@
 **Статус:** проект задания на реализацию, основанный на достигнутом консенсусе. Не запускался.  
 **Требование пользователя:** никакого искусственного разделения на «исследовательскую» и «реализационную» фазы с новым handoff. Агент исследует ровно нужное, проверяет на работающем Desktop, выбирает **заранее перечисленную ветку** и реализует подтверждённое. При истинном blocker не выдумывает новую архитектуру.
 
-## 0. Цель и недопустимые действия
+## 0. Цель и условия выполнения
 
 Создать первую working version **AIR / Agent Instruction Runtime** для Codex Desktop на Windows: структурированные политики и свободные versioned vocabularies; GPA resolution с отдельной дешёвой моделью, inspectable results, два уровня cache; Session Directives state; доставку, compaction recovery и scoped child, точный trace; совместимость с native instructions и возможностью rollback. Выделить надёжно проверяемый функционал и честно зафиксировать неподдерживаемые ветви.
 
-Не возобновлять Zapret Maintainer, live goal AC/NFQUEUE/SSH, не изменять пользовательскую Windows-конфигурацию без permission preflight и snapshot, не читать 10h/24h raw evidence. Не создавать MCP/daemon/внешнюю БД/LLM-process в фоне. Не реализовывать Skill Manager, graph DB, Goal Observer, агентский supervisor или general context management.
+Работать в изолированном workspace. Изменения действующих конфигураций Windows, Codex и профилей агентов выполнять после permission preflight, снимка исходного состояния и согласования области записи. Ранее остановленный Zapret Maintainer оставлять без запуска и изменений. Использовать имеющиеся hooks, доступного провайдера resolver и локальное файловое хранение. Материалы raw evidence открывать только при доказанной необходимости.
 
 Root действует как integrator. При наличии субагентов выделить **независимые outputs и ownership**:
 1. `Host & Runtime`: Codex versions, trust/hooks, message contracts, Desktop probes; read-only и isolated workspace.
@@ -20,7 +20,7 @@ Root действует как integrator. При наличии субаген�
 
 ## 1. Входы и порядок чтения
 
-Сначала прочитать локальные `01_AIR_ARCHITECTURE_RU.md`, `02_ADR_RU.md`, `04_CONSENSUS_CONFIDENCE_RU.md`, `05_REUSE_MATRIX_RU.md` и этот ТЗ. Исторические материалы: точечно `REFERENCE_SNAPSHOTS/*`, главным образом `AGENTS_POLICIES_TZ_RU.md` и `REUSE_LINKS.md`. Git history/raw JSONL не читать без спорного конкретного факта.
+Сначала прочитать `01_AIR_ARCHITECTURE_RU.md`, `07_GLOSSARY_RU.md`, `02_ADR_RU.md`, `04_CONSENSUS_CONFIDENCE_RU.md`, `05_REUSE_MATRIX_RU.md` и этот ТЗ. Исторические материалы: точечно `REFERENCE_SNAPSHOTS/*`, главным образом `AGENTS_POLICIES_TZ_RU.md` и `REUSE_LINKS.md`. Git history/raw JSONL не читать без спорного конкретного факта.
 
 Перед значительным кодом: inspect live `~/.agents/AGENTS.md → ENTRYPOINT.md → shared`, actual Codex home/config/trust, real installed version, existing plugin registration; snapshot affected files. Не переносить historical snapshots на ПК как будто они live. Сравнить новую семантику с текущим attached `agent-policy` и конфликтным skill: изменения разрешены пользователем, но только controlled migration diff.
 
