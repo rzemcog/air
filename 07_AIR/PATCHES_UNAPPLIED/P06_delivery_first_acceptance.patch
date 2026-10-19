@@ -1,0 +1,12 @@
+--- a/03_AGENT_IMPLEMENTATION_TZ_RU.md
++++ b/03_AGENT_IMPLEMENTATION_TZ_RU.md
+@@ -108,6 +108,9 @@
+ 
+ **E2E mandatory:** next model request sees actual current recovery instructions; custom child sees scoped policies and surviving directives; distinction delivered/complied; exactly tested version named; source/agent/user authority deviations reported; session continuity after compaction/resume. A component may be accepted independently despite another BLOCKED branch; full system `DONE` only when all agreed critical invariants are met.
+ 
++**[ПРЕДЛОЖЕНИЕ P06 — требует консенсуса]** В том же агентском запуске порядок зависимости AC: (1) runtime hooks trust+dispatch и authority canary; (2) минимальная source selection + nonduplicate recovery; (3) cache/Schema/Vocabulary/resolver; (4) Session State+Subagent+hot. Независимые workstreams делегировать параллельно, но blocked transport не компенсировать «готовым DSL». Отчёт должен перечислять `DONE/BLOCKED` по каждой dependency ветке.
++
++
+ ## 8. Deliverables
+ 
+ Provide source tree, pinned dependencies, tests/scripts, minimal synthetic test workspace, machine-readable schema + sample vocab/policies, `REUSE_DECISION.md`, `HOST_PROBES.md` (version, stdout receipts, screenshots/traces if relevant), `DELIVERY_MATRIX.md`, explicit `BLOCKERS.md`, migration diffs to `agent-policy`/skill/profiles/bootstrap, `ROLLBACK.md`, cache sample, policy trace sample redacted. No surprises hidden in global user state. Report `DONE/PARTIAL/BLOCKED` criterion by criterion; include commands/evidence and failures. If blocked, continue all independent implementation rather than looping on one hook.

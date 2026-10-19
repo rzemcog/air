@@ -1,0 +1,12 @@
+--- a/03_AGENT_IMPLEMENTATION_TZ_RU.md
++++ b/03_AGENT_IMPLEMENTATION_TZ_RU.md
+@@ -50,6 +50,9 @@
+ **R5 Child scoping.** Real custom subagent with role, project path, task context; verify agent_type/task_name/cwd metadata; isolation native vs AIR; relevant Session Directives; отсутствие дублирования Role Profile и чужих scoped policies.
+ 
+ **R6 UserPromptSubmit modes.** A: side-effect-only update Session State при новой persistent directive, без model output; B: short hot canonical excerpt, сохранение фокуса; C: совместный bounded handler, со временем исполнения и доказательством порядка. Внутри одного длинного turn этот hook не срабатывает повторно. Проверить, кто фактически вызывает cheap model/API и доступен ли он в sync hook.
++
++**[ПРЕДЛОЖЕНИЕ P04 — требует консенсуса]** Для каждой директивы хранить session/turn identity (если доступен), generation, original-message hash, scope, active/revoked/superseded status, source event id и timestamp. Обновления атомарно/idempotent с защитой от повторного hook, concurrent child, fork/resume. Если нет достоверного event identity или semantics directive спорна, запись не повышать в confirmed active без отдельного подтверждения. В trace не хранить сырой user prompt.
++
+ 
+ **R7 Limits and failure.** Проверить default `additionalContextLimit`, override (bounded), spill/truncation, latency/timeouts, invalid JSON, permission-denied source, symlink escaping, missing required file, cache corruption, crash during atomic write, restoration after disable.
+ 

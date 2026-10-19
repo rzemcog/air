@@ -1,0 +1,12 @@
+--- a/03_AGENT_IMPLEMENTATION_TZ_RU.md
++++ b/03_AGENT_IMPLEMENTATION_TZ_RU.md
+@@ -34,6 +34,9 @@
+ - Ajv/JSON Schema: validation; JsonLogic or tiny subset for declarative applicability; OPA/Cedar/Casbin only conceptual comparison, не добавлять большие policy engines ради AIR v1.
+ 
+ Сделать `REUSE_DECISION.md`: adopted verbatim/adapted/reference/rejected with evidence, license path и commit. Если код реально заимствован, сохранить LICENSE/NOTICE, attribution.
++
++**[ПРЕДЛОЖЕНИЕ P03 — требует консенсуса]** Перед hook integration измерить fast path и cold path. На cache hit никаких вызовов LLM. На cache miss использовать строго bounded wait/cancellation и однократную обработку на session/generation; валидный LKG применяется только при точном совпадении всех входных source/context fingerprints. Если fresh semantic resolution не готова вовремя, не передавать unreviewed incomplete mandatory bundle как полноценный; пометить локальный blocker.
++
+ 
+ ## 3. Runtime preflight и эксперименты (по ходу реализации)
+ 
