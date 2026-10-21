@@ -1,3 +1,7 @@
+<!-- @style: ./.mdstyled/air.css -->
+<!-- @script: ./.mdstyled/air.js -->
+<!-- @page: air-docs -->
+
 # AIR — ТЗ на реализацию (DRAFT; зависит от экспериментов и ADR)
 
 **Статус:** НЕ исполняемое разрешение на production implementation · 2026-10-22. Подготовлено как карта следующей работы. Уточнение архитектуры идёт по [`05_EXPERIMENTAL_TZ_RU.md`](05_EXPERIMENTAL_TZ_RU.md). Пользователь отдельно согласует спорные пункты до принятия реализационных контрактов.
@@ -10,19 +14,32 @@ AIR должен обеспечивать source selection, разрешение
 
 ## 1. Зависимости реализации
 
-```mermaid
-flowchart TD
-  E[05: Эксперименты: host ABI, authority, native, compaction] --> H[Host Adapter contract]
-  C[Согласование Schema v1 пользователем] --> I[Policy / Vocabulary validation + IR]
-  H --> D[Delivery Plan / scoped recovery]
-  I --> G[Deterministic candidate analysis]
-  G --> R[Cheap Semantic Resolver / validated decisions]
-  R --> K[GPA + Conflict Decision Cache]
-  K --> D
-  S[Session Directives extraction / State] --> D
-  D --> T[E2E acceptance: model-visible + compliance separately]
-  B[Blocker] -.-> E
-```
+<div class="air-visual" role="group" aria-label="Зависимости реализации AIR">
+  <div class="air-v-heading"><strong>Карта зависимостей реализации</strong><span class="air-v-subtitle">DRAFT: реализовывать после согласования gates</span></div>
+  <div class="air-dependencies">
+    <div class="air-dep-pipeline">
+      <div class="air-node air-node--host"><span class="air-tag air-tag--host">Host evidence</span><strong>Экспериментальное ТЗ (05)</strong><small>Host ABI, authority, native, compaction</small></div>
+      <div class="air-arrow-down" aria-hidden="true">↓</div>
+      <div class="air-node air-node--host"><strong>Host Adapter contract</strong><small>Lifecycle, facts, transport и права</small></div>
+    </div>
+    <div class="air-dep-pipeline">
+      <div class="air-node"><span class="air-tag air-tag--pending">User approval</span><strong>Согласование Schema v1</strong><small>Спорная semantics остаётся открытой</small></div>
+      <div class="air-arrow-down" aria-hidden="true">↓</div>
+      <div class="air-node air-node--core"><strong>Policy / Vocabulary validation + IR</strong><small>Структурный язык и типизированные Rules</small></div>
+    </div>
+  </div>
+  <div class="air-merge">
+    <div class="air-node air-node--core"><strong>Детерминированный отбор кандидатов</strong><small>После валидированного Policy IR</small></div>
+    <div class="air-arrow-down" aria-hidden="true">↓</div>
+    <div class="air-node air-node--core"><strong>Cheap Semantic Resolver → Validated Decisions</strong><small>Семантическая часть по unresolved relations</small></div>
+    <div class="air-arrow-down" aria-hidden="true">↓</div>
+    <div class="air-node air-node--core"><strong>GPA Cache + Conflict Decision Cache</strong><small>Повторное использование с контролем изменившегося контекста</small></div>
+  </div>
+  <div class="air-merge"><div class="air-dep-bottom"><div class="air-node air-node--host"><strong>Host Adapter contract</strong><small>Вход в план доставки</small></div><div class="air-node"><strong>Session Directives extraction / State</strong><small>Директивы пользователя, отдельно от GPA</small></div></div><div class="air-arrow-down" aria-hidden="true">↓</div><div class="air-node air-node--core"><strong>Delivery Plan · Scoped Recovery</strong><small>Получает решение из Cache, факты Host Adapter и Session State.</small></div></div>
+  <div class="air-arrow-down" aria-hidden="true">↓</div>
+  <div class="air-dep-accept air-node air-node--good"><strong>E2E Acceptance</strong><small>Наблюдаемая доставка (model-visible) и compliance измеряются отдельно.</small></div>
+  <div class="air-flow-caption">Любая блокирующая экспериментальная ветвь возвращается к экспериментам с новым узким вопросом; она не разрешает автоматически переписывать архитектуру.</div>
+</div>
 
 **Stop-gates:** Schema v1 отложена (значит нормализованное AST и `require`/`permit` semantics не утверждены); приоритеты/делегация на уровне модели, достоверность native recovery, синхронная latency resolver и `UserPromptSubmit` modes требуют экспериментов и/или отдельного ADR. Независимые технические spike/fixtures могут выполняться в experimental workspace, не становясь каноническим runtime.
 

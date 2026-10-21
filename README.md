@@ -1,8 +1,19 @@
+<!-- @style: ./docs/.mdstyled/air.css -->
+<!-- @script: ./docs/.mdstyled/air.js -->
+<!-- @page: air-docs -->
+
 # AIR · Agent Instruction Runtime
 
 **Артефакты архитектуры и исследований · редакция 22 октября 2026 · Codex Desktop / Windows как первая host integration**
 
 AIR находится на стадии проектирования. Архитектура AIR Core описана независимо от конкретного harness. Текущая задача для агента: **проверить host contracts и закрыть/локализовать архитектурные неизвестные**. ТЗ реализации остаётся черновиком до последующего согласования. Код AIR и проверенные Windows Desktop E2E ещё не созданы.
+
+<div class="air-kpi-row" aria-label="Текущее состояние документации">
+  <div class="air-kpi"><strong>CURRENT</strong>Эксперименты R1–R9</div>
+  <div class="air-kpi"><strong>DRAFT</strong>ТЗ реализации</div>
+  <div class="air-kpi"><strong>OPEN</strong>Schema v1</div>
+  <div class="air-kpi"><strong>SEPARATE</strong>Delivery / Compliance</div>
+</div>
 
 ## Начало работы
 
@@ -11,10 +22,13 @@ AIR находится на стадии проектирования. Архи�
 3. Для будущего этапа есть [`docs/10_IMPLEMENTATION_DRAFT_TZ_RU.md`](docs/10_IMPLEMENTATION_DRAFT_TZ_RU.md). Статус DRAFT: само по себе не разрешает разработчику определить спорную Schema v1 или изменить Shared Policy.
 4. При чтении результатов пользоваться цепочками [`docs/04_EVIDENCE_CHAINS_RU.md`](docs/04_EVIDENCE_CHAINS_RU.md) и [`docs/03_USE_CASES_RU.md`](docs/03_USE_CASES_RU.md), а решения о reuse проверять по [`docs/06_REUSE_MATRIX_RU.md`](docs/06_REUSE_MATRIX_RU.md).
 
+Схемы и настройка визуального чтения: [**Визуальное оформление MdStyled**](docs/README_VISUAL_PREVIEW_RU.md).
+
 ## Карта рабочих файлов
 
 | Путь | Назначение |
 |---|---|
+| `docs/README_VISUAL_PREVIEW_RU.md` | Как открыть визуальную документацию в MdStyled, офлайн CSS/JS |
 | `docs/01_ARCHITECTURE_RU.md` | Архитектура AIR Core и Host Adapter, диаграммы resolver/delivery |
 | `docs/02_ADR_RU.md` | Согласованные и открытые решения |
 | `docs/03_USE_CASES_RU.md` | Проблемы, use cases, ожидаемое поведение |

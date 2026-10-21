@@ -1,3 +1,7 @@
+<!-- @style: ./.mdstyled/air.css -->
+<!-- @script: ./.mdstyled/air.js -->
+<!-- @page: air-docs -->
+
 # AIR — use cases и проблемы, которые мы решаем
 
 **Статус:** согласованные задачи и проверяемые гипотезы. Метрики взяты из прежних forensic-отчётов; AIR ещё не запускался на машине пользователя. Связанные исследования: [`04_EVIDENCE_CHAINS_RU.md`](04_EVIDENCE_CHAINS_RU.md). Экспериментальная проверка: [`05_EXPERIMENTAL_TZ_RU.md`](05_EXPERIMENTAL_TZ_RU.md).

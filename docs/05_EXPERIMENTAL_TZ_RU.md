@@ -1,3 +1,7 @@
+<!-- @style: ./.mdstyled/air.css -->
+<!-- @script: ./.mdstyled/air.js -->
+<!-- @page: air-docs -->
+
 # AIR — экспериментальное ТЗ для уточнения архитектуры
 
 **Статус:** CURRENT EXPERIMENT PLAN · 2026-10-22. Исполнитель проверяет host contracts и возвращает проверяемые результаты и варианты решений. **Не является разрешением на полноценную реализацию AIR.**
@@ -22,19 +26,23 @@ Root отвечает за интеграцию evidence. При наличии 
 
 ### Схема доказательного цикла
 
-```mermaid
-flowchart TD
-  H[Гипотеза и проверяемый контракт] --> P[Минимальный воспроизводимый probe]
-  P --> O[Наблюдение + traces + build + версии]
-  O --> V{Ожидаемое подтверждено?}
-  V -->|Да| D[Подтвердить capability / ограниченный вариант]
-  V -->|Нет| X[Контрпример и локальный blocker]
-  V -->|Недостаточно данных| U[Неопределённость: следующий узкий probe]
-  D --> A[Предложение для ADR и Draft ТЗ]
-  X --> A
-  U --> H
-  A --> S[Согласование архитектурного решения пользователем]
-```
+<div class="air-visual" data-air-filterable="true" data-air-active-path="all" role="group" aria-label="Цикл архитектурного эксперимента">
+  <div class="air-v-heading"><strong>Исследовательский цикл</strong><span class="air-v-subtitle">Evidence first · никаких автоматических архитектурных решений</span></div>
+  <div class="air-dependencies">
+    <div class="air-node air-node--core"><span class="air-step-number">01</span><strong>Гипотеза и проверяемый контракт</strong><small>Что наблюдение должно подтвердить или опровергнуть?</small></div>
+    <div class="air-node"><span class="air-step-number">02</span><strong>Минимальный воспроизводимый probe</strong><small>Изолированная среда, версия host, test fixture.</small></div>
+  </div>
+  <div class="air-arrow-down" aria-hidden="true">↓</div>
+  <div class="air-entry air-node"><span class="air-step-number">03</span><strong>Наблюдение и свидетельства</strong><small>Receipts, traces, версии и отдельно model-visible/behavior evidence.</small></div>
+  <div class="air-checkpoint">Вердикт по исходной гипотезе</div>
+  <div class="air-flow-tools" hidden role="group" aria-label="Подсветить вердикт"><button type="button" data-air-filter="all">Все исходы</button><button type="button" data-air-filter="confirmed">Подтверждено</button><button type="button" data-air-filter="refuted">Опровергнуто</button><button type="button" data-air-filter="unknown">Данных мало</button></div>
+  <div class="air-experiment-paths">
+    <section class="air-path" data-air-path="confirmed"><header>Подтверждено</header><div class="air-path-inner"><div class="air-node air-node--good"><strong>Зафиксировать capability</strong><small>Или строго ограниченный подтверждённый вариант.</small></div><small>↓ Предложение для ADR и Draft ТЗ</small></div></section>
+    <section class="air-path" data-air-path="refuted"><header>Опровергнуто</header><div class="air-path-inner"><div class="air-node air-node--bad"><strong>Контрпример и локальный blocker</strong><small>Не переименовывать неудачу в успех.</small></div><small>↓ Предложение для ADR и Draft ТЗ</small></div></section>
+    <section class="air-path" data-air-path="unknown"><header>Недостаточно данных</header><div class="air-path-inner"><div class="air-node"><strong>Новый узкий probe</strong><small>Уточнить наблюдаемое различие; сформулировать новую гипотезу.</small></div><small>↩ Возврат к пункту 01</small></div></section>
+  </div>
+  <div class="air-merge"><div class="air-node air-node--core"><span class="air-step-number">04</span><strong>Предложение к ADR → согласование пользователя</strong><small>Подтверждённый либо опровергнутый исход оформляется как вариант архитектурного решения, но не утверждается автоматически.</small></div></div>
+</div>
 
 Исследование заканчивается доказанным результатом или обоснованным blocker; оно не превращается автоматически в разработку production runtime.
 

@@ -1,3 +1,7 @@
+<!-- @style: ./.mdstyled/air.css -->
+<!-- @script: ./.mdstyled/air.js -->
+<!-- @page: air-docs -->
+
 # AIR — Agent Instruction Runtime: рабочая архитектура
 
 **Редакция:** 2026-10-22 / harness-neutral architecture, уточнённый resolver и эскалация конфликтов  
@@ -61,17 +65,32 @@
 
 ### Архитектурные границы
 
-```mermaid
-flowchart TB
-  A[Canonical Sources: Global / Project / Agent / User] --> B[AIR Core]
-  V[Vocabulary и Policy документы] --> B
-  B --> C[Policy IR / Resolution / Caches / Session State]
-  C --> D[Delivery Plan и Payload]
-  H[Host Adapter: факты, lifecycle, права, native sources] --> B
-  H --> D
-  D --> E[Исполняющий агент внутри host]
-  E --> F[Наблюдаемость: delivery отдельно от compliance]
-```
+<div class="air-visual" role="group" aria-label="Архитектурные границы AIR">
+  <div class="air-v-heading"><strong>Путь инструкции от источника до агента</strong><span class="air-v-subtitle">Доставка и соблюдение измеряются отдельно</span></div>
+  <div class="air-arch-columns">
+    <div class="air-arch-sources">
+      <div class="air-node"><span class="air-tag">Источники</span><strong>Global · Project</strong><small>Общие и проектные политики</small></div>
+      <div class="air-node"><strong>Agent · User</strong><small>Профиль и пользовательские директивы</small></div>
+      <div class="air-node"><strong>Vocabulary · Policy</strong><small>Типизированные символы и Rules</small></div>
+    </div>
+    <div class="air-inline-arrow" aria-hidden="true">→</div>
+    <div class="air-arch-core">
+      <div class="air-node air-node--core"><span class="air-tag air-tag--core">AIR Core</span><strong>Выбор → IR → Resolution</strong><small>Применимость, конфликтные отношения и нормативный контракт</small></div>
+      <div class="air-node air-node--core"><strong>Caches · Session State</strong><small>Сохраняемые решения и действующие директивы</small></div>
+      <div class="air-node air-node--core"><strong>Delivery Plan · Payload</strong><small>Готовый scoped текст без дублирования native body</small></div>
+    </div>
+    <div class="air-inline-arrow" aria-hidden="true">→</div>
+    <div class="air-node"><span class="air-tag">Host</span><strong>Исполняющий агент</strong><small>Инструкции доставлены host-механизмами</small><div class="air-edge-note">↓</div><strong>Наблюдаемость</strong><small>Delivery отдельно от compliance</small></div>
+  </div>
+  <div class="air-arch-adapter">
+    <div class="air-node air-node--host"><span class="air-tag air-tag--host">Host Adapter</span><strong>Lifecycle · Facts · Authority</strong><small>Native sources и контракт транспорта</small></div>
+    <div class="air-inline-arrow" aria-hidden="true">→</div>
+    <div class="air-node air-node--host"><strong>Подключает Core к host</strong><small>Данные применимости и подтверждённые возможности доставки</small></div>
+    <div class="air-inline-arrow" aria-hidden="true">→</div>
+    <div class="air-node air-node--host"><strong>План доставки</strong><small>Native / AIR-managed, scoped recovery</small></div>
+  </div>
+  <div class="air-arch-footer"><span><i class="air-swatch"></i> Независимое ядро</span><span><i class="air-swatch air-swatch--host"></i> Интеграция с host</span><span>Codex Desktop / Windows: первая реализация Adapter</span></div>
+</div>
 
 - **AIR Core:** нормативная модель, валидатор, resolver, состояние и детерминированная сборка.
 - **Host Adapter:** точка интеграции с транспортом, протокольными правами, lifecycle-событиями, native sources и runtime facts. Возможности host документируются проверенным capability contract.
@@ -131,20 +150,20 @@ Policy Graph — **производная структура памяти**, а 
 
 ### Схема разрешения неопределённости
 
-```mermaid
-flowchart TD
-  I[Изменились входы GPA или отсутствует результат] --> C{Валидный cache HIT?}
-  C -->|Да| A[Детерминированная сборка]
-  C -->|Нет| D[Детерминированная проверка и выбор кандидатов]
-  D --> U{Остались неразрешённые семантические отношения?}
-  U -->|Нет| A
-  U -->|Да| L[Выделенный дешёвый Semantic Resolver]
-  L --> V{Типизированный ответ валиден?}
-  V -->|Да| A
-  V -->|Нет, timeout или unavailable| B[BLOCKED_RESOLUTION только для зависимой ветви]
-  A --> O[Resolution / Cache / Scoped Delivery Payload]
-  B --> S[Эскалация: instruction-conflict-resolution / решение пользователя]
-```
+<div class="air-visual" data-air-filterable="true" data-air-active-path="all" role="group" aria-label="Разрешение GPA: четыре исхода">
+  <div class="air-v-heading"><strong>Resolution pipeline</strong><span class="air-v-subtitle">Cache → deterministic → semantic → blocker</span></div>
+  <div class="air-entry air-node air-node--core"><span class="air-tag air-tag--core">Вход</span><strong>Изменились GPA-источники или отсутствует результат</strong><small>Проверяем fingerprint и валидность кэшированного решения.</small></div>
+  <div class="air-arrow-down" aria-hidden="true">↓</div>
+  <div class="air-checkpoint">Какой путь подтверждён?</div>
+  <div class="air-flow-tools" hidden role="group" aria-label="Подсветить исход"><button type="button" data-air-filter="all">Все ветви</button><button type="button" data-air-filter="hit">Cache HIT</button><button type="button" data-air-filter="deterministic">Без LLM</button><button type="button" data-air-filter="semantic">Resolver</button><button type="button" data-air-filter="blocked">Ошибка</button></div>
+  <div class="air-path-grid">
+    <section class="air-path air-path--hit" data-air-path="hit"><header><span>01 · Валидный cache HIT</span><span class="air-tag air-tag--host">Да</span></header><div class="air-path-inner"><div class="air-node air-node--good"><strong>Детерминированная сборка</strong><small>Используем проверенное решение. Повторного LLM-вызова нет.</small></div><small>→ Resolution / Cache / Scoped Delivery Payload</small></div></section>
+    <section class="air-path air-path--deterministic" data-air-path="deterministic"><header><span>02 · MISS, без semantic gap</span><span class="air-tag air-tag--host">Нет спора</span></header><div class="air-path-inner"><div class="air-node"><strong>Проверка и отбор кандидатов</strong><small>Не осталось неразрешённых смысловых отношений.</small></div><div class="air-node air-node--good"><strong>Детерминированная сборка</strong></div><small>→ Resolution / Cache / Scoped Delivery Payload</small></div></section>
+    <section class="air-path air-path--semantic" data-air-path="semantic"><header><span>03 · MISS, semantic gap</span><span class="air-tag air-tag--core">Валидный ответ</span></header><div class="air-path-inner"><div class="air-node air-node--core"><strong>Выделенный дешёвый Semantic Resolver</strong><small>Только неразрешённые отношения, не массовая работа Root.</small></div><div class="air-node air-node--good"><strong>Типизированный ответ валиден</strong><small>Валидация → сборка → Cache и Scoped Payload.</small></div></div></section>
+    <section class="air-path air-path--blocked" data-air-path="blocked"><header><span>04 · MISS, failure</span><span class="air-tag" style="color:var(--air-red)">Локальный blocker</span></header><div class="air-path-inner"><div class="air-node air-node--bad"><strong>Невалидный ответ, timeout или unavailable</strong><small><code>BLOCKED_RESOLUTION</code> только для зависимой ветви.</small></div><div class="air-node"><strong>Эскалация конфликта</strong><small>Skill <code>instruction-conflict-resolution</code> / решение пользователя.</small></div></div></section>
+  </div>
+  <div class="air-flow-caption">Нажатие кнопки подсвечивает соответствующий исход, не скрывая остальные. Валидный формат ответа LLM не доказывает семантическую истинность решения. Timeout и выбор fallback проверяются экспериментами.</div>
+</div>
 
 Проверка валидности результата LLM не является доказательством семантической истинности решения. Вызов resolver на критическом пути hook разрешается только при подтверждённом budget/latency contract; выбор precompile/fallback проверяется экспериментами.
 

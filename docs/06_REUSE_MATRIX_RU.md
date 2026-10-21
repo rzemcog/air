@@ -1,3 +1,7 @@
+<!-- @style: ./.mdstyled/air.css -->
+<!-- @script: ./.mdstyled/air.js -->
+<!-- @page: air-docs -->
+
 # AIR — матрица reuse по компонентам
 
 **Обновлено:** 2026-10-19. **Взято за основу, а не изобретено повторно:** исходный handoff `04_REFERENCES/REUSE_LINKS.md` + `01_CURRENT/AGENTS_POLICIES_TZ_RU.md` из исходного архива; новая часть касается формата Vocabulary/Policy, resolver/cache и User Directives.

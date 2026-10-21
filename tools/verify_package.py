@@ -16,11 +16,18 @@ errors: list[str] = []
 links_checked = 0
 for p in files:
     rel = p.relative_to(root)
-    if p.suffix not in {'.md', '.patch', '.py'} and p.name not in {'.gitignore', 'SHA256SUMS'}:
+    if p.suffix not in {'.md', '.patch', '.py', '.css', '.js'} and p.name not in {'.gitignore', 'SHA256SUMS'}:
         errors.append(f'unexpected artifact: {rel}')
     if p.suffix != '.md':
         continue
     content = p.read_text(encoding='utf-8')
+    if p.relative_to(root).as_posix().startswith(('docs/',)) or p.name == 'README.md':
+        expected_style = './docs/.mdstyled/air.css' if p.parent == root else './.mdstyled/air.css'
+        expected_script = './docs/.mdstyled/air.js' if p.parent == root else './.mdstyled/air.js'
+        if f'<!-- @style: {expected_style} -->' not in content or f'<!-- @script: {expected_script} -->' not in content:
+            errors.append(f'MdStyled reference missing: {rel}')
+        for asset in (expected_style, expected_script):
+            if not (p.parent / asset).exists(): errors.append(f'visual asset missing: {rel} -> {asset}')
     for target in re.findall(r'(?<!!)\[[^\]]+\]\(([^)]+)\)', content):
         if target.startswith(('http://', 'https://', 'mailto:', '#')):
             continue
