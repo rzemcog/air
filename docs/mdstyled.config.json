@@ -1,0 +1,10 @@
+{
+  "styles": [
+    "./air.css"
+  ],
+  "scripts": [
+    "./air.js"
+  ],
+  "mode": "trusted",
+  "autoDiscover": true
+}

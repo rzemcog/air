@@ -1,5 +1,5 @@
-<!-- @style: ./docs/.mdstyled/air.css -->
-<!-- @script: ./docs/.mdstyled/air.js -->
+<!-- @style: ./docs/air.css -->
+<!-- @script: ./docs/air.js -->
 <!-- @page: air-docs -->
 
 # AIR · Agent Instruction Runtime
@@ -21,6 +21,8 @@ AIR находится на стадии проектирования. Архи�
 2. Исполнить **только экспериментальное задание** [`docs/05_EXPERIMENTAL_TZ_RU.md`](docs/05_EXPERIMENTAL_TZ_RU.md). Оно включает host probes R1–R9, карту H1–H24 и evidence-first workflow с локальными blockers.
 3. Для будущего этапа есть [`docs/10_IMPLEMENTATION_DRAFT_TZ_RU.md`](docs/10_IMPLEMENTATION_DRAFT_TZ_RU.md). Статус DRAFT: само по себе не разрешает разработчику определить спорную Schema v1 или изменить Shared Policy.
 4. При чтении результатов пользоваться цепочками [`docs/04_EVIDENCE_CHAINS_RU.md`](docs/04_EVIDENCE_CHAINS_RU.md) и [`docs/03_USE_CASES_RU.md`](docs/03_USE_CASES_RU.md), а решения о reuse проверять по [`docs/06_REUSE_MATRIX_RU.md`](docs/06_REUSE_MATRIX_RU.md).
+
+Если схемы отображаются как слитный текст, откройте [**проверку рендеринга**](docs/00_RENDER_TEST_RU.md).
 
 Схемы и настройка визуального чтения: [**Визуальное оформление MdStyled**](docs/README_VISUAL_PREVIEW_RU.md).
 

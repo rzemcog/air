@@ -1,6 +1,8 @@
 /* Optional enhancement only. All architecture diagrams are readable without JS. */
 (() => {
   const init = () => {
+    const probe = document.getElementById('air-js-status');
+    if (probe) { probe.textContent = 'подтверждён'; probe.style.color = '#65d8c4'; probe.style.fontWeight = 'bold'; }
     document.querySelectorAll('.air-visual[data-air-filterable]').forEach((flow) => {
       flow.classList.add('air-enhanced');
       flow.querySelectorAll('.air-flow-tools[hidden]').forEach(tools => tools.removeAttribute('hidden'));
