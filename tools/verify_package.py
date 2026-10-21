@@ -22,12 +22,16 @@ for p in files:
         continue
     content = p.read_text(encoding='utf-8')
     if p.relative_to(root).as_posix().startswith(('docs/',)) or p.name == 'README.md':
-        expected_style = './docs/.mdstyled/air.css' if p.parent == root else './.mdstyled/air.css'
-        expected_script = './docs/.mdstyled/air.js' if p.parent == root else './.mdstyled/air.js'
+        expected_style = './docs/air.css' if p.parent == root else './air.css'
+        expected_script = './docs/air.js' if p.parent == root else './air.js'
         if f'<!-- @style: {expected_style} -->' not in content or f'<!-- @script: {expected_script} -->' not in content:
             errors.append(f'MdStyled reference missing: {rel}')
         for asset in (expected_style, expected_script):
             if not (p.parent / asset).exists(): errors.append(f'visual asset missing: {rel} -> {asset}')
+        if re.search(r'(?m)^\s*<style(?:\s|>)', content) or re.search(r'<(?:div|span|section|article|p|header|a)\b[^>]*\sstyle\s*=', content):
+            errors.append(f'inline CSS is forbidden in AIR documentation: {rel}')
+        if re.search(r'data-air-[\w-]+=', content):
+            errors.append(f'MdStyled sanitizer strips data-air-* attributes: {rel}')
     for target in re.findall(r'(?<!!)\[[^\]]+\]\(([^)]+)\)', content):
         if target.startswith(('http://', 'https://', 'mailto:', '#')):
             continue
@@ -55,6 +59,12 @@ with tempfile.TemporaryDirectory(prefix='air-baseline-') as t:
             if r.returncode:
                 errors.append(f'unapplicable historical proposal: {f.name}: {r.stdout.decode(errors="replace")[-240:]}')
 
+# Documentation workflow and handoff must be discoverable and current.
+for wanted in ['HANDOFF_CURRENT_RU.md', 'skills/mdstyled-documentation/SKILL.md', 'docs/MDSTYLED_INTEGRATION_NOTES_RU.md']:
+    if not (root / wanted).is_file():
+        errors.append(f'missing MdStyled workflow/handoff: {wanted}')
+if (root / 'docs/mdstyled.config.json').exists():
+    errors.append('duplicated MdStyled config (prefer @style/@script only)')
 # No underhanded rewrite of core policies through an unreviewed artifact.
 skill = (root / 'skills/instruction-conflict-resolution/SKILL.md').read_text('utf-8')
 if '../../shared/agent-policy.md' in skill:

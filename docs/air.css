@@ -32,7 +32,7 @@ body.vscode-light .mdstyled-root.air-docs, body.vscode-light .air-visual { --air
 .mdstyled-root.air-docs pre {border-radius:12px;border:1px solid var(--air-border);overflow:auto;}
 .mdstyled-root.air-docs code {font-size:.92em;}
 .mdstyled-root.air-docs hr {border:0;border-top:1px solid var(--air-border);}
-/* Standalone HTML diagrams remain useful in ordinary Markdown renderers. */
+/* All diagram layout is in this external stylesheet. */
 .air-visual {color:var(--air-ink); font-family:inherit; line-height:1.45; background:var(--air-bg);border:1px solid var(--air-border);border-radius:20px;padding:clamp(14px,2.6vw,28px);margin:24px 0 30px;box-shadow:0 12px 32px rgba(0,0,0,.09);max-width:100%;}
 .air-visual *, .air-visual *::before, .air-visual *::after {box-sizing:border-box;}
 .air-v-heading {display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding-bottom:16px;margin-bottom:18px;border-bottom:1px solid var(--air-border);}
@@ -65,9 +65,9 @@ body.vscode-light .mdstyled-root.air-docs, body.vscode-light .air-visual { --air
 .air-flow-tools[hidden] {display:none !important;}
 .air-flow-tools {display:none;flex-wrap:wrap;gap:6px;margin-bottom:15px;}
 .air-visual.air-enhanced .air-flow-tools {display:flex;}
-.air-flow-tools button {cursor:pointer;color:var(--air-muted);border:1px solid var(--air-border);background:var(--air-surface);padding:6px 11px;border-radius:999px;font:inherit;font-size:12px;font-weight:650;line-height:1.3;}
-.air-flow-tools button[aria-pressed="true"] {background:color-mix(in srgb,var(--air-primary) 13%,var(--air-surface));border-color:var(--air-primary);color:var(--air-ink);}
-.air-flow-tools button:focus-visible,.air-visual summary:focus-visible {outline:2px solid var(--air-primary);outline-offset:3px;}
+.air-flow-tools .air-flow-filter {cursor:pointer;color:var(--air-muted);border:1px solid var(--air-border);background:var(--air-surface);padding:6px 11px;border-radius:999px;font:inherit;font-size:12px;font-weight:650;line-height:1.3;}
+.air-flow-tools .air-flow-filter[aria-pressed="true"] {background:color-mix(in srgb,var(--air-primary) 13%,var(--air-surface));border-color:var(--air-primary);color:var(--air-ink);}
+.air-flow-tools .air-flow-filter:focus-visible,.air-visual summary:focus-visible {outline:2px solid var(--air-primary);outline-offset:3px;}
 .air-entry {text-align:center;max-width:610px;margin:0 auto 14px;}
 .air-checkpoint {font-size:12px;font-weight:750;color:var(--air-muted);letter-spacing:.035em;text-transform:uppercase; margin:12px 0 10px;}
 .air-path-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
@@ -77,7 +77,7 @@ body.vscode-light .mdstyled-root.air-docs, body.vscode-light .air-visual { --air
 .air-path--semantic > header {color:var(--air-primary);}
 .air-path--blocked > header {color:var(--air-red);}
 .air-path-inner {padding:12px;display:grid;gap:8px;}
-.air-visual[data-air-active-path]:not([data-air-active-path="all"]) .air-path.air-dimmed{opacity:.23;filter:grayscale(.55);}
+.air-visual.air-filterable .air-path.air-dimmed{opacity:.23;filter:grayscale(.55);}
 .air-path small {color:var(--air-muted);font-size:12px;}
 .air-path code {font-size:11px;}
 .air-flow-footer {margin-top:15px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
@@ -113,3 +113,11 @@ body.vscode-light .mdstyled-root.air-docs, body.vscode-light .air-visual { --air
  .air-v-subtitle{display:block;margin-top:5px;}
 }
 @media (prefers-reduced-motion:reduce){.air-path{transition:none;}}
+
+/* MdStyled-safe diagnostics and status classes; no inline CSS in Markdown. */
+.air-tag--danger{color:var(--air-red);border-color:var(--air-red)}
+.air-flow-filter{text-decoration:none;display:inline-block}
+.air-flow-filter:hover{text-decoration:none;filter:brightness(1.15)}
+.air-css-probe{--air-css-loaded:1;display:block;padding:15px 18px;background:#113f33;border:3px solid #65d8c4;border-radius:12px;color:#e6fdf6;margin:16px 0}
+.air-css-probe::after{content:" · CSS ПОДКЛЮЧЕН";font-weight:800;color:#91ffe5}
+.air-js-probe{display:block;padding:12px 16px;border:1px solid var(--air-border);border-radius:12px;margin:16px 0}

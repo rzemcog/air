@@ -8,12 +8,6 @@
 
 AIR находится на стадии проектирования. Архитектура AIR Core описана независимо от конкретного harness. Текущая задача для агента: **проверить host contracts и закрыть/локализовать архитектурные неизвестные**. ТЗ реализации остаётся черновиком до последующего согласования. Код AIR и проверенные Windows Desktop E2E ещё не созданы.
 
-<style data-air-landing-fallback="1">
-.air-kpi-row{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
-.air-kpi-row .air-kpi{min-width:125px;padding:12px 15px;border:1px solid #535f78;background:#1d283b;color:#e7ebf6;border-radius:12px;font-size:12px}
-.air-kpi-row .air-kpi strong{display:block;color:#beb2ff;font-size:16px;margin-bottom:4px}
-</style>
-
 <div class="air-kpi-row" aria-label="Текущее состояние документации">
   <div class="air-kpi"><strong>CURRENT</strong>Эксперименты R1–R9</div>
   <div class="air-kpi"><strong>DRAFT</strong>ТЗ реализации</div>
@@ -23,12 +17,15 @@ AIR находится на стадии проектирования. Архи�
 
 ## Начало работы
 
+**Для продолжения с прошлой сессии:** [`HANDOFF_CURRENT_RU.md`](HANDOFF_CURRENT_RU.md). Для документации MdStyled: [`skills/mdstyled-documentation/SKILL.md`](skills/mdstyled-documentation/SKILL.md).
+
+
 1. Прочитать [`docs/01_ARCHITECTURE_RU.md`](docs/01_ARCHITECTURE_RU.md), [`docs/02_ADR_RU.md`](docs/02_ADR_RU.md), [`docs/07_GLOSSARY_RU.md`](docs/07_GLOSSARY_RU.md).
 2. Исполнить **только экспериментальное задание** [`docs/05_EXPERIMENTAL_TZ_RU.md`](docs/05_EXPERIMENTAL_TZ_RU.md). Оно включает host probes R1–R9, карту H1–H24 и evidence-first workflow с локальными blockers.
 3. Для будущего этапа есть [`docs/10_IMPLEMENTATION_DRAFT_TZ_RU.md`](docs/10_IMPLEMENTATION_DRAFT_TZ_RU.md). Статус DRAFT: само по себе не разрешает разработчику определить спорную Schema v1 или изменить Shared Policy.
 4. При чтении результатов пользоваться цепочками [`docs/04_EVIDENCE_CHAINS_RU.md`](docs/04_EVIDENCE_CHAINS_RU.md) и [`docs/03_USE_CASES_RU.md`](docs/03_USE_CASES_RU.md), а решения о reuse проверять по [`docs/06_REUSE_MATRIX_RU.md`](docs/06_REUSE_MATRIX_RU.md).
 
-Если схемы отображаются как слитный текст, откройте [**проверку рендеринга**](docs/00_RENDER_TEST_RU.md).
+Если внешние стили не применились, откройте [**проверку загрузки CSS/JS**](docs/00_RENDER_TEST_RU.md).
 
 Схемы и настройка визуального чтения: [**Визуальное оформление MdStyled**](docs/README_VISUAL_PREVIEW_RU.md).
 
@@ -36,6 +33,8 @@ AIR находится на стадии проектирования. Архи�
 
 | Путь | Назначение |
 |---|---|
+| `HANDOFF_CURRENT_RU.md` | Самодостаточный checkpoint и следующий проверяемый шаг |
+| `skills/mdstyled-documentation/SKILL.md` | Регламент HTML/CSS/JS и диагностики MdStyled |
 | `docs/README_VISUAL_PREVIEW_RU.md` | Как открыть визуальную документацию в MdStyled, офлайн CSS/JS |
 | `docs/01_ARCHITECTURE_RU.md` | Архитектура AIR Core и Host Adapter, диаграммы resolver/delivery |
 | `docs/02_ADR_RU.md` | Согласованные и открытые решения |

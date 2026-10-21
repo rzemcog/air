@@ -65,45 +65,6 @@
 
 ### Архитектурные границы
 
-<style data-air-visual-fallback="1">
-/* Essential fallback for HTML diagrams; normal styling is in docs/air.css. */
-.air-visual{box-sizing:border-box;color:#e5eaf5;background:#151b28;border:1px solid #424d64;border-radius:16px;padding:18px;margin:22px 0 28px;line-height:1.5;font-family:system-ui,sans-serif;max-width:100%;overflow-wrap:anywhere}
-.air-visual *{box-sizing:border-box}
-.air-visual .air-v-heading{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid #424d64}
-.air-visual .air-v-heading strong{font-size:17px}
-.air-visual .air-v-subtitle,.air-visual small,.air-visual .air-flow-caption{font-size:12px;color:#b0bfd3;line-height:1.5}
-.air-visual .air-node{background:#202a3c;border:1px solid #4b5871;border-radius:12px;padding:13px 15px;min-width:0;overflow-wrap:anywhere}
-.air-visual .air-node strong{display:block;font-size:14px;margin:3px 0 5px;color:#f0f4fc}
-.air-visual .air-node small{display:block}
-.air-visual .air-node--core,.air-visual .air-entry{border-color:#8987d9;background:#252943}
-.air-visual .air-node--host{border-color:#61b5ac;background:#17373b}
-.air-visual .air-node--bad{border-color:#c47c8a}
-.air-visual .air-tag{display:inline-block;padding:3px 8px;margin-bottom:7px;font-size:11px;color:#c9d0fa;border:1px solid #777cb0;border-radius:99px;font-weight:700}
-.air-visual .air-arch-sources,.air-visual .air-arch-core,.air-visual .air-dep-pipeline{display:grid;gap:9px;min-width:0}
-.air-visual .air-arch-columns,.air-visual .air-arch-adapter{display:grid;grid-template-columns:minmax(0,1fr) 26px minmax(0,1.4fr) 26px minmax(0,1fr);gap:8px;align-items:center}
-.air-visual .air-arch-adapter{margin-top:15px}
-.air-visual .air-inline-arrow,.air-visual .air-arrow-down{text-align:center;color:#c2c0ff;font-size:22px;padding:3px}
-.air-visual .air-arch-footer{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid #424d64;color:#b0bfd3;font-size:12px}
-.air-visual .air-arch-footer span{display:inline-flex;gap:6px;align-items:center}
-.air-visual .air-swatch{display:inline-block;background:#b3a9ff;border-radius:50%;width:9px;height:9px}
-.air-visual .air-swatch--host{background:#71c8b7}
-.air-visual .air-path-grid,.air-visual .air-flow-footer,.air-visual .air-dependencies,.air-visual .air-dep-bottom{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.air-visual .air-experiment-paths{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.air-visual .air-path{border:1px solid #46546d;background:#202a3c;border-radius:12px;overflow:hidden;min-width:0}
-.air-visual .air-path>header{display:flex;gap:8px;justify-content:space-between;padding:10px 13px;border-bottom:1px solid #46546d;font-size:13px;font-weight:700}
-.air-visual .air-path-inner{display:grid;gap:8px;padding:12px}
-.air-visual .air-entry{max-width:620px;margin:0 auto 15px;text-align:center}
-.air-visual .air-checkpoint{font-weight:700;font-size:12px;margin:13px 0 9px;color:#b6c3d8}
-.air-visual .air-flow-tools{display:none}
-.air-visual .air-merge{margin-top:14px;border-top:1px solid #46546d;padding-top:12px}
-.air-visual .air-dep-accept{max-width:620px;margin:14px auto 0}
-.air-visual .air-flow-caption{margin-top:10px}
-.air-visual .air-edge-note{font-size:11px;color:#afbdd1}
-.air-visual .air-step-number{display:inline-block;padding:4px 7px;border-radius:7px;background:#303956;font-size:11px}
-@media(max-width:960px){.air-visual .air-arch-columns,.air-visual .air-arch-adapter{grid-template-columns:1fr}.air-visual .air-inline-arrow{transform:rotate(90deg)}}
-@media(max-width:650px){.air-visual .air-path-grid,.air-visual .air-flow-footer,.air-visual .air-dependencies,.air-visual .air-dep-bottom,.air-visual .air-experiment-paths{grid-template-columns:1fr}.air-visual{padding:12px}}
-</style>
-
 <div class="air-visual" role="group" aria-label="Архитектурные границы AIR">
   <div class="air-v-heading"><strong>Путь инструкции от источника до агента</strong><span class="air-v-subtitle">Доставка и соблюдение измеряются отдельно</span></div>
   <div class="air-arch-columns">
@@ -189,17 +150,17 @@ Policy Graph — **производная структура памяти**, а 
 
 ### Схема разрешения неопределённости
 
-<div class="air-visual" data-air-filterable="true" data-air-active-path="all" role="group" aria-label="Разрешение GPA: четыре исхода">
+<div class="air-visual air-filterable" role="group" aria-label="Разрешение GPA: четыре исхода">
   <div class="air-v-heading"><strong>Resolution pipeline</strong><span class="air-v-subtitle">Cache → deterministic → semantic → blocker</span></div>
   <div class="air-entry air-node air-node--core"><span class="air-tag air-tag--core">Вход</span><strong>Изменились GPA-источники или отсутствует результат</strong><small>Проверяем fingerprint и валидность кэшированного решения.</small></div>
   <div class="air-arrow-down" aria-hidden="true">↓</div>
   <div class="air-checkpoint">Какой путь подтверждён?</div>
-  <div class="air-flow-tools" hidden role="group" aria-label="Подсветить исход"><button type="button" data-air-filter="all">Все ветви</button><button type="button" data-air-filter="hit">Cache HIT</button><button type="button" data-air-filter="deterministic">Без LLM</button><button type="button" data-air-filter="semantic">Resolver</button><button type="button" data-air-filter="blocked">Ошибка</button></div>
+  <div class="air-flow-tools" role="group" aria-label="Подсветить исход"><a href="#air-filter-all" class="air-flow-filter air-flow-filter--all">Все ветви</a><a href="#air-filter-hit" class="air-flow-filter air-flow-filter--hit">Cache HIT</a><a href="#air-filter-deterministic" class="air-flow-filter air-flow-filter--deterministic">Без LLM</a><a href="#air-filter-semantic" class="air-flow-filter air-flow-filter--semantic">Resolver</a><a href="#air-filter-blocked" class="air-flow-filter air-flow-filter--blocked">Ошибка</a></div>
   <div class="air-path-grid">
-    <section class="air-path air-path--hit" data-air-path="hit"><header><span>01 · Валидный cache HIT</span><span class="air-tag air-tag--host">Да</span></header><div class="air-path-inner"><div class="air-node air-node--good"><strong>Детерминированная сборка</strong><small>Используем проверенное решение. Повторного LLM-вызова нет.</small></div><small>→ Resolution / Cache / Scoped Delivery Payload</small></div></section>
-    <section class="air-path air-path--deterministic" data-air-path="deterministic"><header><span>02 · MISS, без semantic gap</span><span class="air-tag air-tag--host">Нет спора</span></header><div class="air-path-inner"><div class="air-node"><strong>Проверка и отбор кандидатов</strong><small>Не осталось неразрешённых смысловых отношений.</small></div><div class="air-node air-node--good"><strong>Детерминированная сборка</strong></div><small>→ Resolution / Cache / Scoped Delivery Payload</small></div></section>
-    <section class="air-path air-path--semantic" data-air-path="semantic"><header><span>03 · MISS, semantic gap</span><span class="air-tag air-tag--core">Валидный ответ</span></header><div class="air-path-inner"><div class="air-node air-node--core"><strong>Выделенный дешёвый Semantic Resolver</strong><small>Только неразрешённые отношения, не массовая работа Root.</small></div><div class="air-node air-node--good"><strong>Типизированный ответ валиден</strong><small>Валидация → сборка → Cache и Scoped Payload.</small></div></div></section>
-    <section class="air-path air-path--blocked" data-air-path="blocked"><header><span>04 · MISS, failure</span><span class="air-tag" style="color:var(--air-red)">Локальный blocker</span></header><div class="air-path-inner"><div class="air-node air-node--bad"><strong>Невалидный ответ, timeout или unavailable</strong><small><code>BLOCKED_RESOLUTION</code> только для зависимой ветви.</small></div><div class="air-node"><strong>Эскалация конфликта</strong><small>Skill <code>instruction-conflict-resolution</code> / решение пользователя.</small></div></div></section>
+    <section class="air-path air-path--hit air-lane--hit"><header><span>01 · Валидный cache HIT</span><span class="air-tag air-tag--host">Да</span></header><div class="air-path-inner"><div class="air-node air-node--good"><strong>Детерминированная сборка</strong><small>Используем проверенное решение. Повторного LLM-вызова нет.</small></div><small>→ Resolution / Cache / Scoped Delivery Payload</small></div></section>
+    <section class="air-path air-path--deterministic air-lane--deterministic"><header><span>02 · MISS, без semantic gap</span><span class="air-tag air-tag--host">Нет спора</span></header><div class="air-path-inner"><div class="air-node"><strong>Проверка и отбор кандидатов</strong><small>Не осталось неразрешённых смысловых отношений.</small></div><div class="air-node air-node--good"><strong>Детерминированная сборка</strong></div><small>→ Resolution / Cache / Scoped Delivery Payload</small></div></section>
+    <section class="air-path air-path--semantic air-lane--semantic"><header><span>03 · MISS, semantic gap</span><span class="air-tag air-tag--core">Валидный ответ</span></header><div class="air-path-inner"><div class="air-node air-node--core"><strong>Выделенный дешёвый Semantic Resolver</strong><small>Только неразрешённые отношения, не массовая работа Root.</small></div><div class="air-node air-node--good"><strong>Типизированный ответ валиден</strong><small>Валидация → сборка → Cache и Scoped Payload.</small></div></div></section>
+    <section class="air-path air-path--blocked air-lane--blocked"><header><span>04 · MISS, failure</span><span class="air-tag air-tag--danger">Локальный blocker</span></header><div class="air-path-inner"><div class="air-node air-node--bad"><strong>Невалидный ответ, timeout или unavailable</strong><small><code>BLOCKED_RESOLUTION</code> только для зависимой ветви.</small></div><div class="air-node"><strong>Эскалация конфликта</strong><small>Skill <code>instruction-conflict-resolution</code> / решение пользователя.</small></div></div></section>
   </div>
   <div class="air-flow-caption">Нажатие кнопки подсвечивает соответствующий исход, не скрывая остальные. Валидный формат ответа LLM не доказывает семантическую истинность решения. Timeout и выбор fallback проверяются экспериментами.</div>
 </div>
