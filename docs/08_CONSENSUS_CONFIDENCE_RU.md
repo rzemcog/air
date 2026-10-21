@@ -1,6 +1,6 @@
 # AIR — где консенсус, а где доказательства
 
-**Дата:** 2026-10-19. Не путать «утверждено как дизайн» и «будет работать в конкретном Codex Desktop». В таблицах `точно` допустимо только для проверенной спецификации/логики, а не для неизвестного локального runtime.
+**Дата редакции:** 2026-10-22. Не путать «утверждено как дизайн» и «будет работать в конкретном Codex Desktop». В таблицах `точно` допустимо только для проверенной спецификации/логики, а не для неизвестного локального runtime.
 
 ## A. Консенсус текущего архитектурного обсуждения и прежних проектных сессий
 
@@ -9,7 +9,7 @@
 | AIR = Agent Instruction Runtime; первая реализация в Codex Desktop Windows | CONSENSUS | В будущем планируется интеграция функциональности менеджмента skills. |
 | Policy формулирует применимость и нормативные требования; Skill задаёт способ и последовательность исполнения | CONSENSUS | Policy: «при каких условиях что требуется/запрещено/разрешено/предпочтительно?» Skill: «как и в какой последовательности достичь результата?» |
 | Текущий user > Session Directives > Agent > Project > Global | CONSENSUS on intended authority | Не доказан технически из-за developer-role транспорта. |
-| Отдельный cheap resolver, Root не анализирует дубликаты | CONSENSUS | Нет self-confidence scoring; cache + inspection/manual correction. |
+| Отдельный cheap resolver для неразрешимых структурно semantic relations при валидном cache miss | CONSENSUS | Root не выполняет массовую semantic resolution; недоступность/невалидность → локальный `BLOCKED_RESOLUTION`. |
 | GPA cache и Conflict Decision cache | CONSENSUS | Состояние user directives отдельное per session. |
 | Не передавать overlay работающему агенту | CONSENSUS | Доставлять готовый набор применимых правил. |
 | Native `AGENTS.md` и Custom Agent Profile не повторять | CONSENSUS as invariant | Верифицировать фактический native loading/recovery. |
@@ -21,7 +21,12 @@
 | Native skill discovery, не вводить capability-ID registry | CONSENSUS | Не ломать native routing. |
 | Agent Plugins manifest учитывать сейчас | CONSENSUS | Не означает, что AIR runtime semantics стандартизованы Agent Plugins. |
 | `SessionStart(compact)` full recovery, scoped child, hot reminders | LEGACY ACCEPTED | Новый дизайн user-directive side effect вызвал конфликт назначений `UserPromptSubmit`, требует решения. |
-| Rules manifest / полноценный Skill Manager | DEFERRED | Только архитектурно не закрывать будущие пути. |
+| Функциональность менеджмента skills | PLANNED FUTURE | Сейчас используется штатное обнаружение навыков host. |
+
+| Harness-agnostic Core, Host Adapter для конкретной интеграции | CONSENSUS | Codex paths/events описываются отдельно от общей архитектуры. |
+| Адаптированный conflict-resolution skill | SOURCE PATCH APPLIED | Shared Policy без изменений, нужен эксперимент R8 для проверки host загрузки. |
+| ТЗ экспериментов отдельно от Draft ТЗ реализации | CONSENSUS | В текущей редакции эксперименты CURRENT, реализация DRAFT. |
+| Семантика Schema v1 | DEFERRED | `parameters`, `permit`, `applies_if`, missing facts, literals, `require`. |
 
 ## B. Точно НЕ работает как утверждалось (контракт или логическое противоречие)
 
@@ -78,4 +83,4 @@
 6. Инвалидация fine-grained Conflict Decisions с учётом новых третьих правил.
 7. Латентность дешёвой модели на cache miss / privacy disclosure / отказ без потери текущего user prompt.
 
-Каждое неизвестное сопоставлено с probe и `IF → THEN` в `05_IMPLEMENTATION_TZ_RU.md`.
+Каждое неизвестное сопоставлено с probe и `IF → THEN` в `05_EXPERIMENTAL_TZ_RU.md`.

@@ -28,13 +28,13 @@
 
 ## 5. Agent Profile (A)
 
-Специализированные ролевые инструкции агента, например `reviewer`, `researcher`, `implementer`. В Codex они могут жить в `developer_instructions` custom agent TOML. Профиль влияет на GPA Resolution и обычно доставляется native Codex-механизмом.
+Специализированные ролевые инструкции агента, например `reviewer`, `researcher`, `implementer`. В первой интеграции с Codex они могут жить в `developer_instructions` custom agent TOML. Профиль влияет на GPA Resolution и обычно доставляется native Codex-механизмом.
 
 Пример: reviewer оценивает код и формирует замечания. Приоритет Agent над Project установлен для пользовательской policy-иерархии; фактическую message-role семантику проверяет runtime-эксперимент.
 
 ## 6. User Instruction и Current User Prompt
 
-**User Instruction** — явное требование пользователя к задаче или поведению. **Current User Prompt** — текущее сообщение, которое Codex передаёт модели штатно. Оно может изменить ранее действующую Session Directive.
+**User Instruction** — явное требование пользователя к задаче или поведению. **Current User Prompt** — текущее сообщение пользователя, предоставленное исполняющему агенту host. Оно может изменить ранее действующую Session Directive. Способ и протокольную роль доставки определяет host.
 
 Пример: «Для этой задачи не делай commit». Текущий Root получает это указание непосредственно с сообщением.
 
@@ -153,32 +153,44 @@ rules:
 
 Пример: определить, являются ли `evidence.acquire` и `evidence.reuse` конфликтующими требованиями при конкретных условиях.
 
-## 22. Codex Integration
+## 22. Host Adapter и Codex Adapter
 
-Часть AIR, которая сопоставляет платформенные механизмы Codex с правилами доставки AIR: hooks, `additionalContext`, custom profiles, native `AGENTS.md`, trust, пути, event metadata и ограничения контекста. При появлении второго harness его собственная интеграция будет иметь другой набор runtime contracts.
+**Host** — среда, в которой исполняются агенты и которая предоставляет собственные инструкции, lifecycle и механизм доставки сообщений.
+
+**Host Adapter** — часть интеграции AIR, сопоставляющая capabilities host с требованиями AIR: native sources, transport, message authority, lifecycle events, runtime facts, загрузка Shared Policy, пути и доступные доказательства доставки. Adapter не меняет нормативную семантику Policy. Если host не поддерживает capability, Adapter возвращает явный неподдерживаемый статус.
+
+**Codex Adapter** — первая конкретная реализация Host Adapter, связанная с `AGENTS.md`, custom profiles, hooks, trust и механизмами Codex Desktop на Windows. Детали относятся к reference integration, не к общему языку AIR.
 
 ## 23. Delivery Plan
 
-Вычисленный для определённого host, роли агента и lifecycle event план доставки конкретных источников. Указывает механизм (native Codex либо AIR hook) и набор требуемых проверок. План можно изменить при подтверждённом изменении контрактов host.
+Вычисленный для определённого host, роли агента и lifecycle event план доставки конкретных источников. Указывает механизм (native host либо AIR-managed transport) и набор требуемых проверок. План можно изменить при подтверждённом изменении контрактов host.
 
 Пример: custom agent profile — native, дополнительные global policies — AIR, проектный `AGENTS.md` — native.
 
 ## 24. Native Source
 
-Canonical Source, текст которого Codex предоставляет модели штатными средствами. Примеры: global/project `AGENTS.md`, custom agent `developer_instructions`, если их получение подтверждено в установленной версии Desktop.
+Canonical Source, который host предоставляет исполняющей модели штатными средствами. В первой интеграции примерами могут быть global/project `AGENTS.md` и custom agent `developer_instructions`, если их доставка подтверждена.
 
 ## 25. Managed Source
 
-Canonical Source, для которого Delivery Plan назначил AIR механизмом доставки через hooks. Его нормативный приоритет определяется source kind и общей моделью authority, а доставка — интеграцией с Codex.
+Canonical Source, для которого Delivery Plan назначил AIR механизмом доставки через hooks. Его нормативный приоритет определяется source kind и общей моделью authority, а доставка — Host Adapter.
 
 ## 26. Delivery Payload
 
-Подготовленный AIR текст конкретного hook-события: отобранные применимые инструкции и, где требуется, Session Directives с явно ограниченной делегацией для текущего пользователя. AIR хранит provenance и hashes отдельно, поэтому модель получает готовые правила без служебной карты разрешения конфликтов.
+Подготовленный AIR текст конкретного delivery-события host: отобранные применимые инструкции и, где требуется, Session Directives с явно ограниченной делегацией для текущего пользователя. AIR хранит provenance и hashes отдельно, поэтому модель получает готовые правила без служебной карты разрешения конфликтов.
 
 ## 27. Recovery Payload
 
-Delivery Payload для восстановления актуальных инструкций после compaction, resume или другого подтверждённого lifecycle event. Собирается по GPA Resolution, Session State и Delivery Plan. Содержимое зависит от того, какие native инструкции Codex восстановил самостоятельно.
+Delivery Payload для восстановления актуальных инструкций после compaction, resume или другого подтверждённого lifecycle event. Собирается по GPA Resolution, Session State и Delivery Plan. Содержимое зависит от подтверждённого native recovery конкретного host.
 
 ## 28. Policy Trace
 
 Ограниченная диагностика AIR: event, session/agent identity, fingerprints, cache hit/miss, attempt/receipt, transport outcome, duration и ошибки. Позволяет различать запланированную и фактически подтверждённую доставку. По умолчанию записываются служебные метаданные; содержимое пользовательских сообщений и полные тексты политик защищаются от попадания в trace.
+
+## 29. Escalated Conflict Resolution
+
+**Escalated Conflict** — существенный конфликт применимых инструкций, который нельзя разрешить детерминированно или валидным результатом Semantic Resolver. Для него вызывается [`instruction-conflict-resolution` skill](../skills/instruction-conflict-resolution/SKILL.md), использующий единый нормативный контракт, предоставленный host. Skill не переписывает источники и не присваивает себе новый authority. При недоступности контракта или неустранимой неопределённости блокируется только зависимое действие.
+
+## 30. Resolver Availability / BLOCKED_RESOLUTION
+
+**Cache HIT** устраняет повторный семантический вызов; **MISS** инициирует детерминированную проверку, затем выделенный дешёвый resolver только для отношений, не выводимых структурно. Невалидный ответ, timeout и отсутствие resolver не означают совместимость правил. **BLOCKED_RESOLUTION** фиксирует невозможность принять затронутое решение.

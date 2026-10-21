@@ -6,13 +6,13 @@
 **ACCEPTED.** Название системы — **AIR (Agent Instruction Runtime)**. Первая реализация — Codex Desktop на Windows: разрешение, доставка и восстановление инструкций. В будущем планируется интеграция функциональности менеджмента skills.
 
 ## ADR-002 — Граница Policy и Skill
-**ACCEPTED.** **Policy отвечает:** «При каких условиях что обязательно, запрещено, разрешено или предпочтительно?» **Skill отвечает:** «Каким способом и в какой последовательности достичь результата?» Политика задаёт ограничения поведения через декларативные условия и модальности. Skill описывает выполнение и последовательность действий. Для навыков AIR использует native discovery Codex; переносимость ссылок между skills обеспечивается существующими механизмами маршрутизации.
+**ACCEPTED.** **Policy отвечает:** «При каких условиях что обязательно, запрещено, разрешено или предпочтительно?» **Skill отвечает:** «Каким способом и в какой последовательности достичь результата?» Политика задаёт ограничения поведения через декларативные условия и модальности. Skill описывает выполнение и последовательность действий. Для навыков AIR использует штатные механизмы обнаружения host. Первая интеграция использует native discovery Codex; переносимость ссылок обеспечивается механизмами host.
 
 ## ADR-003 — Логические приоритеты
-**ACCEPTED as semantic intent; RUNTIME_GATE for enforcement.** Current User > active Session Directives > Agent Profile > Project > Global. В частности, Agent Profile выше Project. `silent` автоматически применяет контракт, `interactive` выясняет существенные конфликты с пользователем. Authority System/Developer Codex остаётся вне пользовательской модели. Запрещено считать модельную текстовую декларацию способной поменять протокольные message roles.
+**ACCEPTED as semantic intent; RUNTIME_GATE for enforcement.** Current User > active Session Directives > Agent Profile > Project > Global. В частности, Agent Profile выше Project. `silent` автоматически применяет контракт, `interactive` выясняет существенные конфликты с пользователем. Протокольные роли и их приоритет принадлежат host и остаются вне пользовательской модели AIR. Запрещено считать модельную текстовую декларацию способной поменять протокольные message roles.
 
 ## ADR-004 — Отдельный resolver и cache
-**ACCEPTED.** Семантические сравнения выполняет выделенный дешёвый low-reasoning resolver, а не Root. Без самооценки уверенности и отдельной постоянной LLM службы. Два уровня кэша: GPA bundle и отдельно conflict decisions. Машинный Resolution Overlay хранится отдельно от model-visible instruction text; пользователь может посмотреть readable result и исправить его. Формальная валидация результата LLM не доказывает смысловую истинность.
+**ACCEPTED.** Семантические отношения, которые невозможно разрешить детерминированно, вычисляются выделенным дешёвым low-reasoning resolver при отсутствии валидного cache decision. Root не выполняет массовую семантическую резолюцию. Ошибка, недоступность или невалидный ответ resolver не заменяются предположением о совместимости; затронутая ветка получает `BLOCKED_RESOLUTION`. Без самооценки уверенности и отдельной постоянной LLM службы. Два уровня кэша: GPA bundle и отдельно conflict decisions. Машинный Resolution Overlay хранится отдельно от model-visible instruction text; пользователь может посмотреть readable result и исправить его. Формальная валидация результата LLM не доказывает смысловую истинность.
 
 ## ADR-005 — Грамматика AIR документов
 **ACCEPTED principle, SCHEMA_GATE details.** AIR определяет versioned Format Schemas, authored документы **используют** их через `format: air.vocabulary/v1` / `format: air.policy/v1`. Словарь (`Vocabulary`) объявляет доменные symbols/parameter types/facts и human-readable descriptions, но не обязанности. Policy объявляет Rules и ссылается на Vocabulary, не определяя symbols inline. Vocabulary открытые и расширяемые; формат фиксирован и версионируем. `schema:` как поле authored файла уступило `format:` во избежание двусмысленности.
@@ -27,13 +27,13 @@
 **CANDIDATE, согласовано как полезная модель, не обязательная внешняя инфраструктура.** Производное in-memory IR/graph: Source→Rule и relationship edges. Не использовать GraphDB; не требовать DAG для полного графа. Fine-grained decisions можно кэшировать на уровне rules/edges; безопасность reuse зависит от контекста третьих правил. Если оправданность графа не подтверждается, может хватить flat IR + typed edges.
 
 ## ADR-009 — Native sources и delivery ownership
-**ACCEPTED.** Codex сам отвечает за native `AGENTS.md` и native Custom Agent Profile. AIR учитывает их как inputs resolver и не повторяет тела через hook. На текущем историческом handoff `~/.agents/AGENTS.md -> ENTRYPOINT.md -> ~/.agents/shared/` — глобальный bootstrap workflow; расположение и актуальность live Codex installation требуется сверить. Имя `AGENTS.md` само по себе не определяет Global vs Project: классификацию задаёт scope/path. Delivery Plan зависит от host/event и не является постоянным свойством Source.
+**ACCEPTED.** Host доставляет собственные native sources. AIR учитывает их как inputs resolver и не повторяет тела через AIR-managed transport. Для первой интеграции Codex отвечает за native `AGENTS.md` и native Custom Agent Profile. На текущем историческом handoff `~/.agents/AGENTS.md -> ENTRYPOINT.md -> ~/.agents/shared/` — глобальный bootstrap workflow; расположение и актуальность live Codex installation требуется сверить. Имя `AGENTS.md` само по себе не определяет Global vs Project: классификацию задаёт scope/path. Delivery Plan зависит от host/event и не является постоянным свойством Source.
 
 ## ADR-010 — User delegation
 **CANDIDATE, experimental.** Предложено узкое self-delegation в существующих `developer_instructions` каждого Custom Agent Profile: явный текущий user может переопределять требования только **данного Agent Profile**. Аналогичный ограниченный контракт внутри AIR Delivery Payload относится только к **этому** payload. Нельзя допускать неопределённое `for managed policies`. Профили старых агентов требуют явной миграции/backup; автоматический безопасный механизм пока не подтверждён.
 
 ## ADR-011 — Session Directives
-**ACCEPTED model, RUNTIME_GATE mechanics.** Session Directives отдельно от GPA и не входят в reusable GPA cache. Текущий user prompt доставляется Codex напрямую; persistent директивы извлекаются дешёвой моделью и фиксируются как Session State для compaction, resume, subagent. Side-effect-only `UserPromptSubmit` — рабочая гипотеза, а не доказанный Desktop contract. `UserPromptSubmit` hot excerpt из прежнего handoff всё ещё утверждён и требует отдельного согласования с новой схемой (см. ADR-013).
+**ACCEPTED model, RUNTIME_GATE mechanics.** Session Directives отдельно от GPA и не входят в reusable GPA cache. Текущий user prompt предоставляется исполняющему агенту host штатно; persistent директивы извлекаются дешёвой моделью и фиксируются как Session State для compaction, resume, subagent. Side-effect-only `UserPromptSubmit` — рабочая гипотеза, а не доказанный Desktop contract. `UserPromptSubmit` hot excerpt из прежнего handoff всё ещё утверждён и требует отдельного согласования с новой схемой (см. ADR-013).
 
 ## ADR-012 — Persistence/Trace
 **ACCEPTED direction.** Authored sources/config отдельно от cache/session state. Windows root `%LOCALAPPDATA%` предпочтителен, конечное имя и выбор между ним/`PLUGIN_DATA` после проверки. `cache/gpa`, `cache/conflicts`, `sessions`, `trace`. Session State сохраняется на протяжении доступной для resume сессии. Атомарная запись; trace содержит служебные метаданные с ограниченной ретенцией; fingerprints/generation отслеживаются.
@@ -48,17 +48,26 @@
 **ACCEPTED.** AIR обеспечивает воспроизводимую обработку, доставку где поддерживается и наблюдаемость; не гарантирует 100% повиновение LLM. `hook exit 0`, trace и `cache hit` не подтверждают model-visible context и compliant behavior; раздельные E2E observables.
 
 ## ADR-016 — Legacy policies и миграция
-**ACCEPTED direction, implementation OPEN.** Действующие `agent-policy.md` и `instruction-conflict-resolution` skill изменяемы: пользователь разрешил адаптацию. Сама структурированная политика становится canonical после явной миграции, legacy Markdown не нужно вечно поддерживать как равноправный DSL. **До cutover** нельзя потерять действующие правила или скрыто переписать исходные инструкции; migration diff/review/rollback обязательны. Native bootstrap очищается только после подтверждённого transport.
+**ACCEPTED direction, implementation OPEN.** Адаптация `instruction-conflict-resolution` skill принята и выполнена в текущем репозитории; [`skills/instruction-conflict-resolution/SKILL.md`](../skills/instruction-conflict-resolution/SKILL.md) использует контракт, предоставленный host. **Изменение `agent-policy.md` сейчас не требуется и не выполняется.** Сама структурированная политика становится canonical после явной миграции, legacy Markdown не нужно вечно поддерживать как равноправный DSL. **До cutover** нельзя потерять действующие правила или скрыто переписать исходные инструкции; migration diff/review/rollback обязательны. Native bootstrap очищается только после подтверждённого transport.
 
 ## ADR-017 — Статус AIR и происхождение решений
 **FACT.** AIR находится в состоянии проектирования; результаты Windows Desktop экспериментов ещё ожидаются. Эти ADR консолидируют решения исходных сессий и уточняют условия проверки.
+
+## ADR-018 — Harness-neutral Core и первая host integration
+**ACCEPTED.** Архитектура, терминология, Rule/Vocabulary/Resolver/Cache/Session State и универсальные lifecycle-flow описываются независимо от harness. Host Adapter предоставляет native sources, transport, roles, runtime facts, доступность Shared Policy и capabilities. Конкретные Codex hooks и пути описываются в разделе первой интеграции и экспериментальном ТЗ. `host-agnostic` не означает, что все hosts поддерживают все возможности.
+
+## ADR-019 — Escalation и единый нормативный контракт
+**ACCEPTED.** AIR использует единый нормативный контракт разрешения конфликтов. Semantic Resolver выполняет автоматический анализ правил. Skill `instruction-conflict-resolution` адаптирован для разрешения эскалированных конфликтов и использует тот же контракт. Загрузка Shared Policy осуществляется через интеграцию с host. Сам Shared Policy в текущей редакции не меняется. Патч skill является source change, но ещё не доказан интеграционным запуском конкретного host.
+
+## ADR-020 — Разделение заданий по зрелости архитектуры
+**ACCEPTED.** Экспериментальное ТЗ [`05_EXPERIMENTAL_TZ_RU.md`](05_EXPERIMENTAL_TZ_RU.md) является текущим исполняемым заданием для проверки архитектурных решений. [`10_IMPLEMENTATION_DRAFT_TZ_RU.md`](10_IMPLEMENTATION_DRAFT_TZ_RU.md) остаётся черновиком реализации до отдельного согласования спорных контрактов. Эксперименты не разрешают автоматически окончательно утвердить Schema v1 или переписать Shared Policy.
 
 ## Обязательные открытые решения перед `DONE`
 
 1. Инсталляция plugin и фактический dispatch hooks на конкретной сборке Windows Desktop.
 2. Authoritative delivery с profile developer instructions, user delegation и native `AGENTS.md` при compaction.
-3. Нормативная семантика `permit`, unknown runtime facts и объявления custom symbols.
+3. **DEFERRED SCHEMA GATE:** нормативная семантика `parameters`, `permit`, `applies_if`, missing facts, normalizing literals и поведение `require operation`. Пока согласование отложено, решение остаётся за пользователем.
 4. Нужен ли online semantic resolver синхронно в hook или только precompile/offline cache; как вести себя на cache miss при latency/error.
 5. Разведение original `UserPromptSubmit hot reminders` и новой session-directive extraction.
-6. Миграция текущих global bootstrap/ENTRYPOINT/agent-policy/Profile и наличие live files.
+6. Проверка live global bootstrap/ENTRYPOINT/Profile для первой интеграции и согласование миграций. Shared Policy не изменять на этом этапе.
 7. Алгоритм manual correction с cache invalidation и safe approval.

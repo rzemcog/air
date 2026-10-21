@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
-"""Check that AIR's current-tree artifact set is self-contained and lean."""
+"""Validate AIR Markdown package, committed skill patch and historical proposals."""
 from __future__ import annotations
 from pathlib import Path
+import io
+import hashlib
 import re
 import subprocess
 import sys
+import tarfile
+import tempfile
 
 root = Path(__file__).resolve().parents[1]
 files = [p for p in root.rglob('*') if p.is_file() and '.git' not in p.parts]
-errors = []
+errors: list[str] = []
 links_checked = 0
 for p in files:
     rel = p.relative_to(root)
@@ -27,21 +31,58 @@ for p in files:
         if not (p.parent / cleaned).exists():
             errors.append(f'broken link: {rel} -> {target}')
 
-for f in sorted((root / 'proposals').glob('*.patch')):
-    r = subprocess.run(['patch', '--dry-run', '-p1'], cwd=root,
-                       input=f.read_bytes(), stdout=subprocess.PIPE,
-                       stderr=subprocess.PIPE)
-    if r.returncode:
-        errors.append(f'unapplicable proposal: {f.name}: {r.stdout.decode(errors="replace")[-240:]}')
+# These seven proposals remain *unapplied* and were authored for the older tree.
+# Verify them against their historical source revision, never against current docs.
+proposals = sorted((root / 'proposals').glob('*.patch'))
+with tempfile.TemporaryDirectory(prefix='air-baseline-') as t:
+    archive = subprocess.run(['git', 'archive', '--format=tar', '4cbd0c7'],
+                             cwd=root, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if archive.returncode:
+        errors.append(f'cannot read historical proposal baseline: {archive.stderr.decode(errors="replace")}')
+    else:
+        with tarfile.open(fileobj=io.BytesIO(archive.stdout), mode='r:') as tar:
+            tar.extractall(t, filter='data')
+        for f in proposals:
+            r = subprocess.run(['patch', '--dry-run', '-p1'], cwd=t,
+                               input=f.read_bytes(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if r.returncode:
+                errors.append(f'unapplicable historical proposal: {f.name}: {r.stdout.decode(errors="replace")[-240:]}')
+
+# No underhanded rewrite of core policies through an unreviewed artifact.
+skill = (root / 'skills/instruction-conflict-resolution/SKILL.md').read_text('utf-8')
+if '../../shared/agent-policy.md' in skill:
+    errors.append('skill still contains a hardcoded relative Shared Policy location')
+if 'host' not in skill.lower() or 'Shared Policy' not in skill:
+    errors.append('skill must use host-provided Shared Policy')
+if (root / 'docs/05_IMPLEMENTATION_TZ_RU.md').exists():
+    errors.append('obsolete combined TZ still present')
+for wanted in ['05_EXPERIMENTAL_TZ_RU.md', '10_IMPLEMENTATION_DRAFT_TZ_RU.md']:
+    if not (root / 'docs' / wanted).exists():
+        errors.append(f'missing separated TZ {wanted}')
+exp = (root / 'docs/05_EXPERIMENTAL_TZ_RU.md').read_text('utf-8')
+if len(re.findall(r'\| H\d+\.', exp)) != 24:
+    errors.append('H1-H24 branch map incomplete')
+if not all(re.search(rf'\bR{i}(?:[ .])', exp) for i in range(1,10)):
+    errors.append('R1-R9 experiment set incomplete')
+
+# Integrity manifest covers every working file apart from itself.
+manifest = root / 'SHA256SUMS'
+if manifest.exists():
+    actual_lines = [f'{hashlib.sha256(f.read_bytes()).hexdigest()}  {f.relative_to(root).as_posix()}'
+                    for f in sorted(files, key=lambda x: x.relative_to(root).as_posix())
+                    if f != manifest]
+    expected_lines = manifest.read_text('utf-8').strip().splitlines()
+    if expected_lines != actual_lines:
+        errors.append('SHA256SUMS is missing files or does not match current working tree')
+else:
+    errors.append('SHA256SUMS missing')
 
 unwanted = sorted(str(p.relative_to(root)) for p in files
                   if p.suffix.lower() in {'.jsonl', '.7z', '.zip', '.pdf', '.png', '.jpg', '.log'})
 errors += [f'redundant/raw evidence present: {p}' for p in unwanted]
-required = [root / 'README.md', *(root / 'docs' / f'{n:02d}_{name}_RU.md' for n, name in [])]
-assert (root/'README.md').exists()
-print(f'Checked {len(files)} worktree files, {links_checked} relative links, '
-      f'{len(list((root / "proposals").glob("*.patch")))} patch dry-runs.')
+print(f'Checked {len(files)} files, {links_checked} local Markdown links, '
+      f'{len(proposals)} historical patch dry-runs, skill loading constraints, R1–R9/H1–H24.')
 if errors:
     print('\n'.join(f'ERROR {e}' for e in errors), file=sys.stderr)
     raise SystemExit(1)
-print('PASS: links, patch applicability, no raw evidence in current tree.')
+print('PASS: links, baseline patches, applied skill contract, split specs, no raw evidence.')

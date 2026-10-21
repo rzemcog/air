@@ -1,41 +1,46 @@
 # AIR · Agent Instruction Runtime
 
-**Артефакты для реализации · 19 октября 2026 · Windows Codex Desktop first**
+**Артефакты архитектуры и исследований · редакция 22 октября 2026 · Codex Desktop / Windows как первая host integration**
 
-Этот Git-репозиторий содержит актуальную архитектуру AIR, решения, проверяемые use cases, доказательную историю прежних экспериментов и **единое исполняемое ТЗ**, объединяющее новые эксперименты с реализацией. Код AIR ещё не написан; Windows Desktop E2E AIR ещё не выполнялись.
+AIR находится на стадии проектирования. Архитектура AIR Core описана независимо от конкретного harness. Текущая задача для агента: **проверить host contracts и закрыть/локализовать архитектурные неизвестные**. ТЗ реализации остаётся черновиком до последующего согласования. Код AIR и проверенные Windows Desktop E2E ещё не созданы.
 
-## Как начать
+## Начало работы
 
-1. Прочитать [`docs/05_IMPLEMENTATION_TZ_RU.md`](docs/05_IMPLEMENTATION_TZ_RU.md) как задание исполнителю; ознакомиться с [`docs/01_ARCHITECTURE_RU.md`](docs/01_ARCHITECTURE_RU.md), [`docs/02_ADR_RU.md`](docs/02_ADR_RU.md) и [`docs/07_GLOSSARY_RU.md`](docs/07_GLOSSARY_RU.md).
-2. Проверить use cases [`docs/03_USE_CASES_RU.md`](docs/03_USE_CASES_RU.md) против цепочек исторических наблюдений [`docs/04_EVIDENCE_CHAINS_RU.md`](docs/04_EVIDENCE_CHAINS_RU.md).
-3. Root назначает независимые эксперименты субагентам и работает по таблице `IF → THEN` **без отдельного этапа handoff**. При опасном/концептуальном неопределённом ответе блокируется только зависимый компонент.
-4. На каждый реальный host experiment записывать tested build, гипотезу, setup, expected/observed, trace и verdict. Не заменять proof заявлением инструмента или модели.
+1. Прочитать [`docs/01_ARCHITECTURE_RU.md`](docs/01_ARCHITECTURE_RU.md), [`docs/02_ADR_RU.md`](docs/02_ADR_RU.md), [`docs/07_GLOSSARY_RU.md`](docs/07_GLOSSARY_RU.md).
+2. Исполнить **только экспериментальное задание** [`docs/05_EXPERIMENTAL_TZ_RU.md`](docs/05_EXPERIMENTAL_TZ_RU.md). Оно включает host probes R1–R9, карту H1–H24 и evidence-first workflow с локальными blockers.
+3. Для будущего этапа есть [`docs/10_IMPLEMENTATION_DRAFT_TZ_RU.md`](docs/10_IMPLEMENTATION_DRAFT_TZ_RU.md). Статус DRAFT: само по себе не разрешает разработчику определить спорную Schema v1 или изменить Shared Policy.
+4. При чтении результатов пользоваться цепочками [`docs/04_EVIDENCE_CHAINS_RU.md`](docs/04_EVIDENCE_CHAINS_RU.md) и [`docs/03_USE_CASES_RU.md`](docs/03_USE_CASES_RU.md), а решения о reuse проверять по [`docs/06_REUSE_MATRIX_RU.md`](docs/06_REUSE_MATRIX_RU.md).
 
-## Файлы
+## Карта рабочих файлов
 
-| Путь | Для чего |
+| Путь | Назначение |
 |---|---|
-| `docs/01_ARCHITECTURE_RU.md` | Модель AIR, граница Policy/Skill, Rule/Vocabulary, runtime, cache/delivery |
-| `docs/02_ADR_RU.md` | Согласованные решения и явно открытые вопросы |
-| `docs/03_USE_CASES_RU.md` | Пользовательские боли, приоритеты, сценарии, acceptance |
-| `docs/04_EVIDENCE_CHAINS_RU.md` | Гипотезы → проверки → наблюдения → выводы → следующие тесты, со ссылками на исходные журналы |
-| `docs/05_IMPLEMENTATION_TZ_RU.md` | Единое ТЗ: subagents, experiments, 24 IF→THEN gate, AC01–AC10, старт реализации |
-| `docs/06_REUSE_MATRIX_RU.md` | Что можно reuse/adapt/reference и что ещё needs source review |
-| `docs/07_GLOSSARY_RU.md` | Терминологический контракт с примерами |
-| `docs/08_CONSENSUS_CONFIDENCE_RU.md` | Консенсус и уровни доказанности: точно/вероятно/непроверено |
-| `docs/09_UNAPPLIED_PROPOSALS_RU.md`, `proposals/` | Отдельные замечания Sol-6 и патчи; **не утверждены и не применены** |
+| `docs/01_ARCHITECTURE_RU.md` | Архитектура AIR Core и Host Adapter, диаграммы resolver/delivery |
+| `docs/02_ADR_RU.md` | Согласованные и открытые решения |
+| `docs/03_USE_CASES_RU.md` | Проблемы, use cases, ожидаемое поведение |
+| `docs/04_EVIDENCE_CHAINS_RU.md` | Предыдущие гипотезы/наблюдения и ограничения доказательств |
+| `docs/05_EXPERIMENTAL_TZ_RU.md` | **Текущее исполняемое ТЗ экспериментов**, R1–R9 / H1–H24 |
+| `docs/06_REUSE_MATRIX_RU.md` | Готовые компоненты для адаптации и ссылки на исходные исследования |
+| `docs/07_GLOSSARY_RU.md` | Нормативная терминология |
+| `docs/08_CONSENSUS_CONFIDENCE_RU.md` | Консенсус и уровни технической подтверждённости |
+| `docs/09_UNAPPLIED_PROPOSALS_RU.md` | Открытые предложения Sol-6, не применённые к архитектуре |
+| `docs/10_IMPLEMENTATION_DRAFT_TZ_RU.md` | **Черновик** разработки после закрытия gates, с диаграммой зависимостей |
+| `skills/instruction-conflict-resolution/SKILL.md` | **Адаптированный skill**, v0.2.0, для эскалированных конфликтов |
+| `skills/instruction-conflict-resolution/MIGRATION_NOTES.md` | Исходник, изменения и ограничения проверок skill |
+| `changes/APPLIED_instruction_conflict_resolution.patch` | Применённый patch исходного SKILL.md, отдельно от предложений |
+| `proposals/*.patch` | Семь **непринятых** архитектурных патчей к исторической baseline |
 
-## Источники и ограничения
+## Консенсус и замороженные решения
 
-В исходном пользовательском ZIP `agents-policies-self-contained-handoff-2026-10-18-v2(1).zip` было значительно больше данных: primary JSONL, архивы завершённого прогона, предыдущие варианты policies, исторические handoff и forensic audits. Новый пакет сохраняет проверяемую **выжимку и адреса источников**, но не дублирует многомегабайтные журналы, файлы других проектов, private diagnostics и старые handoff. При спорном факте исследователь может вернуться к оригинальному ZIP и проверить ровно указанное место.
+- Policy задаёт нормативные ограничения; Skill задаёт процедуру и последовательность работы.
+- Архитектура harness-agnostic; первая проверяемая интеграция Codex Desktop Windows.
+- Отдельный дешёвый Semantic Resolver вызывается на неразрешимых структурно отношениях при отсутствии валидного cached decision. Невалидность или недоступность вызывает локальную блокировку.
+- `instruction-conflict-resolution` использует **один Shared Policy contract, передаваемый Host Adapter**. В репозитории skill адаптирован, **Shared Policy не менялся**; требуется R8 runtime proof.
+- Семантика Schema v1 (`parameters`, `permit`, `applies_if`, unknown facts, literals, `require operation`) **DEFERRED**.
+- Две линии ТЗ существуют одновременно: эксперименты = CURRENT; реализация = DRAFT.
 
-Сводки по Zapret Maintainer используются **только как evidence поведения агентов Codex**, а не как план возобновления Zapret. Исходные JSONL могут содержать частные сведения; в AIR Git их не публиковать.
+## Исходные материалы и история
 
-Из исходного ZIP сохранена реконструированная Git-история handoff, включая предыдущие коммиты AIR. **Состояние рабочего дерева этого коммита очищено** от прошлых документов. Ранее синтетическая история не доказывает, что коммиты соответствовали живым изменениям на Windows-хосте.
+Исходный архив `agents-policies-self-contained-handoff-2026-10-18-v2(1).zip` содержал первичные JSONL, большие архивы evidence, старые policies и исторические handoff. В текущем рабочем дереве сохранены сжатые наблюдения и адреса источников, без дублирования private raw logs. Историческая Git-история из handoff реконструирована; она не равна доказательству live Windows runtime. Восстановление прошлого evidence проводится по конкретному спорному утверждению.
 
-## Правила ведения проекта
-
-- Концептуально принятые решения маркированы `CONSENSUS`/`ACCEPTED`; непроверенные host facts остаются `RUNTIME_GATE`.
-- Никаких автоматических изменений живых `.agents`, native профилей, production проектов до отдельного permission preflight, backup и плана отката.
-- Актуальные artifacts редактируются новым Git commit, старые черновики и отработанные логи в этот репозиторий не возвращаются.
-- `proposals/*.patch` создаются **отдельно от базовых файлов** и применяются только после нового консенсуса.
+Запрещено в ходе экспериментального задания менять production-проекты, существующие native Agent Profiles, Shared Policy или глобальный bootstrap без явного разрешения, снимка состояния и rollback. Семь unapplied архитектурных предложений нельзя считать утверждёнными только потому, что они лежат в Git.

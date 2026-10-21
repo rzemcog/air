@@ -99,7 +99,7 @@
 4. Никаких измерений недорогого LLM-resolver внутри sync hook или после cache miss.
 5. Никакой независимой валидации cross-vocabulary candidate coverage и Session Directives persistence.
 
-Эти пункты превращаются в **обязательные experiments + IF/THEN gates** в [`05_IMPLEMENTATION_TZ_RU.md`](05_IMPLEMENTATION_TZ_RU.md).
+Эти пункты превращаются в **обязательные experiments + IF/THEN gates** в [`05_EXPERIMENTAL_TZ_RU.md`](05_EXPERIMENTAL_TZ_RU.md).
 
 ## Provenance и очистка
 
