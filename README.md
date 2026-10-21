@@ -8,6 +8,12 @@
 
 AIR находится на стадии проектирования. Архитектура AIR Core описана независимо от конкретного harness. Текущая задача для агента: **проверить host contracts и закрыть/локализовать архитектурные неизвестные**. ТЗ реализации остаётся черновиком до последующего согласования. Код AIR и проверенные Windows Desktop E2E ещё не созданы.
 
+<style data-air-landing-fallback="1">
+.air-kpi-row{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+.air-kpi-row .air-kpi{min-width:125px;padding:12px 15px;border:1px solid #535f78;background:#1d283b;color:#e7ebf6;border-radius:12px;font-size:12px}
+.air-kpi-row .air-kpi strong{display:block;color:#beb2ff;font-size:16px;margin-bottom:4px}
+</style>
+
 <div class="air-kpi-row" aria-label="Текущее состояние документации">
   <div class="air-kpi"><strong>CURRENT</strong>Эксперименты R1–R9</div>
   <div class="air-kpi"><strong>DRAFT</strong>ТЗ реализации</div>

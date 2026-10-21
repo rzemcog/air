@@ -5,6 +5,6 @@
   "scripts": [
     "./air.js"
   ],
-  "mode": "trusted",
+  "mode": "safe",
   "autoDiscover": true
 }
