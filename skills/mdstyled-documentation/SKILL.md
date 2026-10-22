@@ -16,7 +16,7 @@ version: 0.1.0
 - Источник API расширения: https://github.com/OsamaAbuSitta/MDStyled ; для изменения интеграции перепроверь код установленной/целевой версии, особенно `src/engine/config.ts`, `src/engine/index.ts`, `src/engine/renderer.ts`, `src/previewProvider.ts`.
 - `@style` / `@script` разрешаются **относительно текущего Markdown-файла**, не корня workspace. MdStyled через `fs` читает файлы и **сам** вставляет содержимое в итоговые `<style>` и `<script>`. Не вставляй CSS/JS как fallback внутрь Markdown.
 - Renderer пропускает сырой HTML через `sanitize-html`; некоторые теги/атрибуты удаляются. В проверенной версии `class`, `id`, `href` сохраняются, произвольные `data-air-*` нет, `<button>` не разрешён. Используй классы, ID, ссылки `<a>`; не предполагай, что любой DOM работает. Проверяй точные ограничения по версии.
-- `mdstyled.config.json` не нужен при корректных `@style`/`@script`. Не поддерживай два противоречивых способа подключения для одной страницы.
+- `mdstyled.config.json` не нужен при корректных `@style`/`@script`. Директива `@page` не поддерживается MDStyled 1.0.1. Реальный корень `<div class="mdstyled-root">` не имеет класса `air-docs`; CSS адресуй к реальному DOM. Не поддерживай два противоречивых способа подключения для одной страницы.
 
 ## Правила авторинга
 
@@ -26,7 +26,6 @@ version: 0.1.0
    ```md
    <!-- @style: ./air.css -->
    <!-- @script: ./air.js -->
-   <!-- @page: air-docs -->
    ```
    Для корневого README пути `./docs/air.css` и `./docs/air.js`.
 3. CSS только в `docs/air.css`. **Запрещены** ручные `<style>`, `style="..."` и inline CSS-fallback в `.md`; они маскируют сбой загрузки темы и создают дублирование.
@@ -43,8 +42,10 @@ version: 0.1.0
 4. Открой `docs/00_RENDER_TEST_RU.md` через **MdStyled: Open Preview**. Проверки независимы:
    - внешний CSS: зелёная карточка с рамкой и псевдоэлементом «CSS ПОДКЛЮЧЕН»;
    - JS: `air-js-status` становится «подтверждён»;
-   - JS→CSS: `air-css-status` становится «ПОДТВЕРЖДЁН».
-5. Если тест не прошёл: **Help → Toggle Developer Tools → Console**; сравни `[MdStyled] Preview loaded, CSS length:` и `[AIR] external CSS: loaded/missing`. В этой версии MDStyled ошибки чтения файла могут попадать в объединённый CSS как комментарий `Failed to load: ...`.
+   - JS→CSS: `air-css-status` становится «ПОДТВЕРЖДЁН»;
+   - runtime MdStyled: `air-renderer-status` становится «ПОДТВЕРЖДЁН»;
+   - корневые CSS-правила: `air-root-status` становится «ПОДТВЕРЖДЁН».
+5. Если тест не прошёл: **Help → Toggle Developer Tools → Console**; сравни `[MdStyled] Preview loaded, CSS length:` и `[AIR] external CSS: loaded/missing`. Первая величина включает CSS встроенных расширений и не является доказательством загрузки `air.css`. В этой версии MDStyled ошибки чтения файла могут попадать в объединённый CSS как комментарий `Failed to load: ...`.
 6. Запусти `python tools/verify_package.py`, `git diff --check`, проверь links, YAML frontmatter skill, корректность ссылок на CSS/JS, отсутствие inline fallback, сохранность предложенных `proposals/P01–P07`.
 7. **Chromium-проверка только вспомогательная.** Не объявляй проблему решённой, пока не подтверждена на установленном MDStyled в Windows VS Code. Если нет доступа к этому runtime, укажи `NOT_VERIFIED_IN_MDSTYLED` и точный воспроизводимый probe.
 8. После согласования зафиксируй в Git отдельным коммитом, затем обнови `SHA256SUMS` (с проверкой скриптом) и handoff.

@@ -65,6 +65,19 @@ for wanted in ['HANDOFF_CURRENT_RU.md', 'skills/mdstyled-documentation/SKILL.md'
         errors.append(f'missing MdStyled workflow/handoff: {wanted}')
 if (root / 'docs/mdstyled.config.json').exists():
     errors.append('duplicated MdStyled config (prefer @style/@script only)')
+# MdStyled 1.0.1 creates .mdstyled-root without the unsupported @page directive.
+for p in [root / 'README.md', *(root / 'docs').glob('*.md')]:
+    if re.search(r'(?m)^<!-- @page:', p.read_text(encoding='utf-8')):
+        errors.append(f'unsupported MdStyled @page directive: {p.relative_to(root)}')
+css_text = (root / 'docs/air.css').read_text(encoding='utf-8')
+if '.mdstyled-root.air-docs' in css_text:
+    errors.append('CSS incorrectly targets .mdstyled-root.air-docs')
+if '--air-root-css-ready:1' not in css_text or '.mdstyled-root {' not in css_text:
+    errors.append('MdStyled root CSS probe missing')
+probe_text = (root / 'docs/00_RENDER_TEST_RU.md').read_text(encoding='utf-8')
+for probe_id in ['air-js-status', 'air-css-status', 'air-renderer-status', 'air-root-status']:
+    if f'id="{probe_id}"' not in probe_text:
+        errors.append(f'MdStyled probe missing: {probe_id}')
 # No underhanded rewrite of core policies through an unreviewed artifact.
 skill = (root / 'skills/instruction-conflict-resolution/SKILL.md').read_text('utf-8')
 if '../../shared/agent-policy.md' in skill:

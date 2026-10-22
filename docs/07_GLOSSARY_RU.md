@@ -1,6 +1,5 @@
 <!-- @style: ./air.css -->
 <!-- @script: ./air.js -->
-<!-- @page: air-docs -->
 
 # AIR — подробный словарь и примеры
 

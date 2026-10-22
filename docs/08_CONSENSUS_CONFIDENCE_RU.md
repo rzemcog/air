@@ -1,6 +1,5 @@
 <!-- @style: ./air.css -->
 <!-- @script: ./air.js -->
-<!-- @page: air-docs -->
 
 # AIR — где консенсус, а где доказательства
 

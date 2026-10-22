@@ -1,6 +1,5 @@
 <!-- @style: ./docs/air.css -->
 <!-- @script: ./docs/air.js -->
-<!-- @page: air-docs -->
 
 # AIR · Agent Instruction Runtime
 

@@ -1,6 +1,5 @@
 <!-- @style: ./air.css -->
 <!-- @script: ./air.js -->
-<!-- @page: air-docs -->
 
 # AIR — ТЗ на реализацию (DRAFT; зависит от экспериментов и ADR)
 

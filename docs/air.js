@@ -4,6 +4,13 @@
   function init(){
     const jsStatus=document.getElementById('air-js-status');
     if(jsStatus){jsStatus.textContent='подтверждён';}
+    const rendererStatus=document.getElementById('air-renderer-status');
+    if(rendererStatus){rendererStatus.textContent=window.mdstyled&&typeof window.mdstyled.onReady==='function'?'ПОДТВЕРЖДЁН':'НЕ ОБНАРУЖЕН';}
+    const rootStatus=document.getElementById('air-root-status');
+    if(rootStatus){
+      const root=document.querySelector('.mdstyled-root');
+      rootStatus.textContent=root&&getComputedStyle(root).getPropertyValue('--air-root-css-ready').trim()==='1'?'ПОДТВЕРЖДЁН':'НЕ ПРИМЕНЁН';
+    }
     const cssProbe=document.getElementById('air-css-probe');
     const cssStatus=document.getElementById('air-css-status');
     if(cssProbe && cssStatus){
