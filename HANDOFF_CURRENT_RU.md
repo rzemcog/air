@@ -1,80 +1,33 @@
 <!-- @style: ./docs/air.css -->
 <!-- @script: ./docs/air.js -->
 
-# AIR — handoff для продолжения работы
+# AIR — актуальный handoff
 
-**Состояние:** 22 октября 2026. Скриншот показывает неоформленную схему. Исправлена ошибка `.mdstyled-root.air-docs`: `@page` на самом деле поддерживается и создаёт вложенный `.mdstyled-root.air-docs`. Предыдущее утверждение об отсутствии поддержки было ошибочным. Добавлены независимые диагностические индикаторы. **Windows MdStyled runtime после исправления не проверен: NOT_VERIFIED_IN_MDSTYLED.**
+**Актуализация:** 22 октября 2026. **Стадия:** архитектура и эксперименты. Исполняемый AIR runtime ещё не создан, Windows Desktop E2E для AIR не проведён.
 
-**Предыдущее состояние:** 22 октября 2026. **Текущий предмет работы:** визуальная документация MdStyled, проверяемая на реальном Windows VS Code. AIR runtime **не реализован**. Архитектура ещё согласовывается.
+## Продолжение работы
 
-## 1. С чего начать следующему агенту
+1. Проверить `git status --short` и `git log -4 --oneline`.
+2. Прочитать [README](README.md), [архитектуру](docs/01_ARCHITECTURE_RU.md), [ADR](docs/02_ADR_RU.md), [словарь](docs/07_GLOSSARY_RU.md) и [статусы согласования](docs/08_CONSENSUS_CONFIDENCE_RU.md).
+3. Рабочее задание: [эксперименты R1–R9 / H1–H24](docs/05_EXPERIMENTAL_TZ_RU.md). [ТЗ реализации](docs/10_IMPLEMENTATION_DRAFT_TZ_RU.md) имеет статус DRAFT и не заменяет экспериментальное задание.
+4. Для доказательных ограничений читать [use cases](docs/03_USE_CASES_RU.md) и [исторические наблюдения](docs/04_EVIDENCE_CHAINS_RU.md). Для поиска готовых компонентов — [матрицу reuse](docs/06_REUSE_MATRIX_RU.md).
+5. Для изменения оформления применять [skill по MdStyled](skills/mdstyled-documentation/SKILL.md) и [инструкцию просмотра](docs/README_VISUAL_PREVIEW_RU.md).
+6. После правок запускать `python tools/verify_package.py` и `git diff --check`, обновлять `SHA256SUMS` после окончательного изменения отслеживаемых файлов.
 
-1. Открой репозиторий с сохранённой `.git`, проверь `git status --short`, `git log -4 --oneline`.
-2. Прочитай этот файл и [`README.md`](README.md).
-3. Для вопросов Markdown/HTML/CSS/JS **применяй** [`skills/mdstyled-documentation/SKILL.md`](skills/mdstyled-documentation/SKILL.md), затем [`docs/MDSTYLED_INTEGRATION_NOTES_RU.md`](docs/MDSTYLED_INTEGRATION_NOTES_RU.md) и [`docs/00_RENDER_TEST_RU.md`](docs/00_RENDER_TEST_RU.md).
-4. Для архитектуры и её статусов читай [`docs/01_ARCHITECTURE_RU.md`](docs/01_ARCHITECTURE_RU.md), [`docs/02_ADR_RU.md`](docs/02_ADR_RU.md), [`docs/07_GLOSSARY_RU.md`](docs/07_GLOSSARY_RU.md), [`docs/08_CONSENSUS_CONFIDENCE_RU.md`](docs/08_CONSENSUS_CONFIDENCE_RU.md).
-5. Выполни `python tools/verify_package.py` и `git diff --check` до начала правок и после них. Если исправляешь пакет, перегенерируй `SHA256SUMS` последним шагом перед commit.
+## Согласованные границы
 
-## 2. Последний запрос и выполненная работа
+- **Policy** задаёт нормы: что запрещено, обязательно, разрешено и при каких условиях. **Skill** задаёт процедуру достижения результата.
+- Архитектура **harness-agnostic**. Первый проверяемый Host Adapter нацелен на Codex Desktop / Windows.
+- `Global + Project + Agent` (GPA) разрешаются отдельно от пользовательских `Session Directives`. Semantic Resolver вызывается для неоднозначных отношений и валидирует результат; недостоверный cache и ошибка резолюции не считаются доказательством совместимости.
+- Canonical Sources, Vocabulary, Rules, IR, Conflict Decisions, Delivery Plan, Payload, Session State и Trace разделены. Host native sources не дублируются через AIR.
+- [Skill разрешения конфликтов](skills/instruction-conflict-resolution/SKILL.md) использует один предоставленный Host Adapter контракт Shared Policy. Изменение Shared Policy в данное задание не входит.
+- Значения `parameters`, `permit`, `applies_if`, `require operation`, unknown facts и literals для Schema v1 остаются **НЕ СОГЛАСОВАНЫ**.
+- Семь [архитектурных предложений P01–P07](docs/09_UNAPPLIED_PROPOSALS_RU.md) остаются **PROPOSED / UNAPPLIED**; их патчи хранятся в `proposals/`.
 
-Пользователь установил [MdStyled](https://github.com/OsamaAbuSitta/MDStyled) для VS Code и хочет качество оформления не хуже интерактивной документации: HTML/CSS/JS, компактные схемы, адаптивность, хороший контраст. Прежние Mermaid-диаграммы были высокими, с обрезкой подписей.
+## Ограничения исполнения
 
-**Подтверждённый пользователем дефект:** HTML-схема на скриншоте превратилась в слитный текст. Предыдущее решение добавляло inline fallback CSS в Markdown. Пользователь обоснованно отверг его: это маскировка проблемы, а не исправление загрузки CSS.
+Эксперименты проводить изолированно, с проверяемым состоянием host и rollback. Не изменять production-профили, native policies, Shared Policy или глобальный bootstrap без отдельного утверждения. Не начинать разработку спорной Schema v1, не переносить результаты других проектов на AIR без проверки. Отчёты о прошлых запусках из [исторических наблюдений](docs/04_EVIDENCE_CHAINS_RU.md) являются вторичными сведениями: первичные логи не входят в репозиторий и не доказывают работоспособность AIR.
 
-**Новый этап после скриншота:**
+## Текущее следующее действие
 
-- Предыдущая ревизия ошибочно удалила поддерживаемый `@page: air-docs`. Текущий CSS работает с внешней оболочкой `.mdstyled-root` и от `@page` не зависит.
-- `docs/00_RENDER_TEST_RU.md` теперь отдельно проверяет CSS-файл, применение корневого селектора, JavaScript и наличие API `window.mdstyled`.
-- Ненулевая `CSS length` не доказывает загрузку `air.css`, поскольку включает CSS встроенных расширений.
-- Новый скриншот `00_RENDER_TEST_RU.md`: карточка AIR и JS не применились, но видны встроенное оглавление «ON THIS PAGE» и сворачиваемые секции. Возможная причина — `MdStyled Edit` и `templateOverride`, который заменяет пользовательские CSS/JS. Уточнение режима открытия остаётся открытым. Следующий тест: `MdStyled: Open Preview` из палитры команд для исходного `.md`, затем `docs/01_ARCHITECTURE_RU.md`.
-
-**Предыдущий этап:**
-
-- Удалены ручные `<style>` fallback из Markdown. Только [`docs/air.css`](docs/air.css) и [`docs/air.js`](docs/air.js) задают оформление/интерактивность.
-- CSS и JS подключаются штатными директивами `@style`/`@script`, пути определяются относительно текущего Markdown.
-- Удалён дублирующий `docs/mdstyled.config.json`.
-- Переключатели графа переделаны с `data-air-*`/`button` на разрешённые `class`/`id`/`a`: в `src/previewProvider.ts` MDStyled применяется HTML-sanitizer, который не сохраняет произвольные `data-air-*`.
-- Добавлен независимый runtime-probe [`docs/00_RENDER_TEST_RU.md`](docs/00_RENDER_TEST_RU.md) для CSS и JS, а также [`docs/MDSTYLED_INTEGRATION_NOTES_RU.md`](docs/MDSTYLED_INTEGRATION_NOTES_RU.md).
-- Создан [`skills/mdstyled-documentation/SKILL.md`](skills/mdstyled-documentation/SKILL.md), регламент работы над визуальной документацией.
-
-**СТАТУС:** файловая структура и исходный контракт MDStyled проверены; **реальный предпросмотр в Windows у пользователя после исправления ещё НЕ подтверждён**. Нельзя писать «исправлено» без его проверки. Отдельно проверяй, не подменяет ли MdStyled встроенный VS Code Markdown Preview.
-
-## 3. Как установлен реальный контракт MdStyled
-
-Проверены исходники публичного репозитория `OsamaAbuSitta/MDStyled` (main, 2026-10-22):
-
-- [`src/engine/config.ts`](https://github.com/OsamaAbuSitta/MDStyled/blob/main/src/engine/config.ts): директивы и пути к файлам CSS/JS обрабатываются относительно каталога `.md`.
-- [`src/engine/index.ts`](https://github.com/OsamaAbuSitta/MDStyled/blob/main/src/engine/index.ts): вызов загрузчиков стилей и скриптов.
-- [`src/engine/renderer.ts`](https://github.com/OsamaAbuSitta/MDStyled/blob/main/src/engine/renderer.ts): сами файлы читаются через `fs`, затем MdStyled вставляет CSS в `<style>` итогового webview. **Это не то же самое, что ручной inline fallback в `.md`.**
-- [`src/previewProvider.ts`](https://github.com/OsamaAbuSitta/MDStyled/blob/main/src/previewProvider.ts): sanitization, допустимые HTML атрибуты, диагностика `CSS length`, webview.
-
-Из этих данных нельзя заключить, что установленная на ПК версия идентична `main`, или что ошибка уже устранена. Диагноз требует результата `00_RENDER_TEST_RU.md` и/или консоли DevTools.
-
-## 4. Следующее проверяемое действие по MdStyled
-
-Открыть **MdStyled: Open Preview** на [`docs/00_RENDER_TEST_RU.md`](docs/00_RENDER_TEST_RU.md). Зафиксировать индикаторы: внешняя CSS-карточка, JavaScript, MdStyled runtime, CSS-файл и корневой CSS. При отказе: `Help → Toggle Developer Tools → Console`, запись `[MdStyled] Preview loaded, CSS length:` и ошибки. Если CSS не загрузился, сравни путь директивы с расположением CSS. Если CSS-файл загружен, но корневой CSS не применён, проверить `.mdstyled-root`; ненулевая `CSS length` недостаточна. Не возвращать `<style>` в `.md`.
-
-## 5. Архитектура AIR: принятые границы
-
-- **Policy** задаёт нормативные ограничения: при каких условиях что обязательно, запрещено, разрешено или предпочтительно. **Skill** задаёт последовательность действий для получения результата. В будущем планируется интеграция функций управления skills.
-- Архитектура **harness-agnostic**; первая интеграция/эксперименты направлены на Codex Desktop / Windows через Host Adapter.
-- `Global + Project + Agent` (GPA) разрешается отдельно от пользовательских `Session Directives`. Resolver выделенный и дешёвый; Root не занимается массовой семантической резолюцией. При недостоверном cache MISS вызывается resolver; при недоступности не предполагается совместимость.
-- Разделены Canonical Source, Vocabulary, Rule, Deterministic IR, Policy Graph, Conflict Decision, Resolution, Delivery Plan, Payload, Session State и Trace. Native-delivery не должна дублироваться через AIR; поведение проверяется реальными host probes.
-- Адаптированный [`skills/instruction-conflict-resolution/SKILL.md`](skills/instruction-conflict-resolution/SKILL.md) обрабатывает эскалированные конфликты по единому Shared Policy контракту от Host Adapter. Существующий **Shared Policy не менять**, пока пользователь не одобрит.
-- `parameters`, `permit`, `applies_if`, `require operation`, unknown facts и literals в **Schema v1 пока НЕ СОГЛАСОВАНЫ**. Не превращать обсуждавшиеся варианты в стандартизованный формат.
-
-## 6. Задания, запреты и проверки
-
-| Часть | Статус | Файл |
-|---|---|---|
-| Эксперименты R1–R9 + условная карта H1–H24 | **CURRENT** | [`docs/05_EXPERIMENTAL_TZ_RU.md`](docs/05_EXPERIMENTAL_TZ_RU.md) |
-| ТЗ реализации | **DRAFT** | [`docs/10_IMPLEMENTATION_DRAFT_TZ_RU.md`](docs/10_IMPLEMENTATION_DRAFT_TZ_RU.md) |
-| Обоснование через use cases и evidence | **REFERENCE** | [`docs/03_USE_CASES_RU.md`](docs/03_USE_CASES_RU.md), [`docs/04_EVIDENCE_CHAINS_RU.md`](docs/04_EVIDENCE_CHAINS_RU.md) |
-| Компоненты для переиспользования | **REFERENCE** | [`docs/06_REUSE_MATRIX_RU.md`](docs/06_REUSE_MATRIX_RU.md) |
-| Семь замечаний к архитектуре `P01–P07` | **PROPOSED, UNAPPLIED** | [`docs/09_UNAPPLIED_PROPOSALS_RU.md`](docs/09_UNAPPLIED_PROPOSALS_RU.md), `proposals/*.patch` |
-
-Запреты: не перезапускать посторонний Zapret-проект, не менять production-политики/профили/глобальный bootstrap, не применять P01–P07 без согласования, не подменять runtime-проверку скриншотом стороннего Chromium. История `.git` содержит **реконструкцию исходных материалов**; не выдавать её за журнал выполненных live-экспериментов AIR.
-
-## 7. Последняя проверка состояния
-
-Команда: `python tools/verify_package.py` проверяет локальные ссылки, декларации MDStyled-ассетов, запрет ручного CSS и неподдерживаемых `data-air-*`, сохранность R1–R9 / H1–H24, историческую применимость семи непринятых патчей и SHA256. `git diff --check` проверяет пробелы и маркеры конфликтов. Коммит и итоговый архив создаются по завершении текущего изменения; на следующем заходе проверяй фактический `git log`, а не предполагаемый hash из текста.
+Выполнить preflight и первые host probes из `docs/05_EXPERIMENTAL_TZ_RU.md`, собрать воспроизводимые positive/negative outcomes. При технической неопределённости сообщить конкретный blocker и предложить выбор, не объявлять неподтверждённые эксперименты завершёнными.

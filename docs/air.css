@@ -17,7 +17,7 @@ body.vscode-light .mdstyled-root, body.vscode-light .air-visual { --air-primary:
 @media (prefers-color-scheme:light) {
   :root {--air-ink:var(--vscode-editor-foreground,#172133);--air-muted:var(--vscode-descriptionForeground,#566175);--air-bg:var(--vscode-editor-background,#f9fbff);--air-surface:var(--vscode-sideBar-background,#fff);--air-primary:#4945bd;--air-teal:#077f6d;--air-amber:#9a6705;--air-red:#bb3945;}
 }
-.mdstyled-root { --air-root-css-ready:1; color:var(--air-ink); line-height:1.68; font-size:15px; max-width:1180px; margin-inline:auto; padding: 6px clamp(4px,2.8vw,26px) 60px; }
+.mdstyled-root { color:var(--air-ink); line-height:1.68; font-size:15px; max-width:1180px; margin-inline:auto; padding: 6px clamp(4px,2.8vw,26px) 60px; }
 .mdstyled-root > h1, .mdstyled-root h1 {font-weight:750; letter-spacing:-.04em; line-height:1.14; font-size:clamp(26px,3vw,40px); padding-block:4px 12px; border-bottom:1px solid var(--air-border);}
 .mdstyled-root h2 {font-size:clamp(20px,2.5vw,27px);font-weight:680;letter-spacing:-.027em;margin-top:2.4em;padding-bottom:.45em;border-bottom:1px solid var(--air-border);}
 .mdstyled-root h3 {font-size:18px;margin-top:1.7em;letter-spacing:-.015em;}
@@ -114,10 +114,7 @@ body.vscode-light .mdstyled-root, body.vscode-light .air-visual { --air-primary:
 }
 @media (prefers-reduced-motion:reduce){.air-path{transition:none;}}
 
-/* MdStyled-safe diagnostics and status classes; no inline CSS in Markdown. */
+/* Shared diagram controls. */
 .air-tag--danger{color:var(--air-red);border-color:var(--air-red)}
 .air-flow-filter{text-decoration:none;display:inline-block}
 .air-flow-filter:hover{text-decoration:none;filter:brightness(1.15)}
-.air-css-probe{--air-css-loaded:1;display:block;padding:15px 18px;background:#113f33;border:3px solid #65d8c4;border-radius:12px;color:#e6fdf6;margin:16px 0}
-.air-css-probe::after{content:" · CSS ПОДКЛЮЧЕН";font-weight:800;color:#91ffe5}
-.air-js-probe{display:block;padding:12px 16px;border:1px solid var(--air-border);border-radius:12px;margin:16px 0}

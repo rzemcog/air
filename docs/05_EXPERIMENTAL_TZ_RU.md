@@ -9,7 +9,7 @@
 
 Выяснить фактические свойства целевого Codex Desktop на Windows, которые блокируют архитектурные решения AIR: hook dispatch, delivery/authority, compaction, native sources, custom agents, scope и latency. Исследования проводятся в отдельном тестовом workspace. **Schema v1 (`parameters`, `permit`, `applies_if`, missing facts, literal normalization) не утверждается и не реализуется как нормативный контракт.** Shared Policy не изменяется.
 
-Результат экспериментов: `docs/EXPERIMENT_RESULTS.md`, `docs/DELIVERY_MATRIX.md`, `docs/BLOCKERS.md`, артефакты минимальных synthetic fixtures и предложения ADR с пометками `PROPOSED`, а не автоматические изменения основного дизайна.
+Результат экспериментов: документированные результаты каждого R1–R9, матрица фактически подтверждённой доставки, список блокировок, минимальные synthetic fixtures и предложения ADR с пометками `PROPOSED`. Путь и формат новых артефактов исполнитель фиксирует в отчёте; до эксперимента они не считаются существующими файлами репозитория.
 
 ### Как проводить работу
 

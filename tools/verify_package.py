@@ -60,21 +60,25 @@ with tempfile.TemporaryDirectory(prefix='air-baseline-') as t:
                 errors.append(f'unapplicable historical proposal: {f.name}: {r.stdout.decode(errors="replace")[-240:]}')
 
 # Documentation workflow and handoff must be discoverable and current.
-for wanted in ['HANDOFF_CURRENT_RU.md', 'skills/mdstyled-documentation/SKILL.md', 'docs/MDSTYLED_INTEGRATION_NOTES_RU.md']:
+for wanted in ['HANDOFF_CURRENT_RU.md', 'skills/mdstyled-documentation/SKILL.md', 'docs/README_VISUAL_PREVIEW_RU.md']:
     if not (root / wanted).is_file():
-        errors.append(f'missing MdStyled workflow/handoff: {wanted}')
+        errors.append(f'missing documentation workflow: {wanted}')
 if (root / 'docs/mdstyled.config.json').exists():
     errors.append('duplicated MdStyled config (prefer @style/@script only)')
-# MdStyled supports @page and creates an optional nested root. Do not ban it.
+# CSS/JS belong to the permanent theme; test-only probes must not return.
 css_text = (root / 'docs/air.css').read_text(encoding='utf-8')
-if '.mdstyled-root.air-docs' in css_text:
-    errors.append('CSS incorrectly targets .mdstyled-root.air-docs')
-if '--air-root-css-ready:1' not in css_text or '.mdstyled-root {' not in css_text:
-    errors.append('MdStyled root CSS probe missing')
-probe_text = (root / 'docs/00_RENDER_TEST_RU.md').read_text(encoding='utf-8')
-for probe_id in ['air-js-status', 'air-css-status', 'air-renderer-status', 'air-root-status']:
-    if f'id="{probe_id}"' not in probe_text:
-        errors.append(f'MdStyled probe missing: {probe_id}')
+js_text = (root / 'docs/air.js').read_text(encoding='utf-8')
+if '.mdstyled-root {' not in css_text:
+    errors.append('MdStyled theme root selector missing')
+if re.search(r'air-(?:css|js|renderer|root)-(?:probe|status)|air-css-loaded|air-root-css-ready', css_text + js_text):
+    errors.append('temporary MdStyled probe code reintroduced')
+# Never cite absent legacy archives/directories as if bundled with this repo.
+legacy_refs = re.compile(
+    r'(?i)(?:agents-policies-self-contained|0[1-6]_(?:HISTORICAL_REFERENCES|PRIMARY_EVIDENCE|CURRENT|DECISIONS|EVIDENCE|REFERENCES)/|\.zip\b|\.7z\b)'
+)
+for doc in [root / 'README.md', root / 'HANDOFF_CURRENT_RU.md', *(root / 'docs').glob('*.md'), *(root / 'skills').rglob('*.md')]:
+    if legacy_refs.search(doc.read_text(encoding='utf-8')):
+        errors.append(f'legacy unavailable source cited in {doc.relative_to(root)}')
 # No underhanded rewrite of core policies through an unreviewed artifact.
 skill = (root / 'skills/instruction-conflict-resolution/SKILL.md').read_text('utf-8')
 if '../../shared/agent-policy.md' in skill:

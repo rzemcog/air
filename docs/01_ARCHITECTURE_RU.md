@@ -4,7 +4,7 @@
 # AIR — Agent Instruction Runtime: рабочая архитектура
 
 **Редакция:** 2026-10-22 / harness-neutral architecture, уточнённый resolver и эскалация конфликтов  
-**Статус:** консолидированная база по handoff и последующему диалогу, **не** утверждение технической работоспособности.  
+**Статус:** актуальная консолидированная архитектура AIR, **не** утверждение технической работоспособности.  
 **Назначение:** единый словарь и описание архитектуры для реализации; спорные места явно отмечены `OPEN` или `RUNTIME_GATE`.
 
 ## 0. Назначение AIR и архитектурная граница
@@ -188,7 +188,7 @@ Selected Canonical Sources G/P/A
 
 - Текущее сообщение предоставляется Root штатным механизмом host. Его протокольная роль устанавливается host.
 - В первой интеграции событие `UserPromptSubmit` *может* вызвать отдельный дешёвый extractor обновлений Session Directives и записать Session State без model injection. Это `RUNTIME_GATE`: dispatch, задержка, согласованность записи и recovery должны быть проверены.
-- В этой интеграции `UserPromptSubmit` также может доставлять канонические краткие hot reminders из прежнего handoff; новый side-effect design конфликтует с ранее утверждённым обязательным hot path. **Решение по двум назначениям event не принято; тест должен измерить и предъявить конкретный вариант или `BLOCKED`.**
+- В этой интеграции `UserPromptSubmit` также может доставлять канонические краткие hot reminders из ранее обсуждённого сценария; новый side-effect design конфликтует с ранее утверждённым обязательным hot path. **Решение по двум назначениям event не принято; тест должен измерить и предъявить конкретный вариант или `BLOCKED`.**
 - Root видит новое указание через normal prompt. Прежние Session Directives остаются в истории до compaction; после compaction восстановление берёт актуальный Session State.
 
 ### 4.3 Compaction / resume
@@ -245,7 +245,7 @@ Host запускает child с Agent Profile A
 
 **Универсальный контракт:** Host Adapter определяет способы загрузки Shared Policy, native источники, протокольные уровни полномочий, lifecycle events, runtime facts, ограничения размера/задержки payload и доступные подтверждения доставки. Adapter может объявить capability unsupported, что приводит к локальному blocker, а не к имитации транспорта.
 
-**Codex Desktop / Windows reference:** проверить native `AGENTS.md`, custom agent `developer_instructions`, hooks `SessionStart`, `UserPromptSubmit`, `SubagentStart`, `PostCompact`, `additionalContext` и их реальные роли. Исторический bootstrap `~/.agents/AGENTS.md → ENTRYPOINT.md → ~/.agents/shared/` проверяется только как частный экземпляр первой интеграции, не часть AIR Core.
+**Codex Desktop / Windows reference:** проверить native `AGENTS.md`, custom agent `developer_instructions`, hooks `SessionStart`, `UserPromptSubmit`, `SubagentStart`, `PostCompact`, `additionalContext` и их реальные роли. Существующие глобальные и проектные bootstrap-инструкции проверяются как конкретные host sources при первой интеграции; их локальные пути не считаются частью AIR Core.
 
 Agent Plugins использует root `plugin.json` (`$schema: https://agent-plugins.org/schemas/1.0.0/plugin.schema.json`) и `extensions.com.openai` для специфичных hooks, а также compatibility `.codex-plugin/plugin.json` в соответствующих конфигурациях. Это упаковка первой интеграции, не runtime ABI Policy. Поддержка проверяется на установленном Desktop; MCP сервер без отдельного основания не вводить.
 

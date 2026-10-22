@@ -16,7 +16,7 @@ AIR находится на стадии проектирования. Архи�
 
 ## Начало работы
 
-**Для продолжения с прошлой сессии:** [`HANDOFF_CURRENT_RU.md`](HANDOFF_CURRENT_RU.md). Для документации MdStyled: [`skills/mdstyled-documentation/SKILL.md`](skills/mdstyled-documentation/SKILL.md).
+**Актуальный рабочий контекст:** [`HANDOFF_CURRENT_RU.md`](HANDOFF_CURRENT_RU.md). Правила оформления документации: [`skills/mdstyled-documentation/SKILL.md`](skills/mdstyled-documentation/SKILL.md).
 
 
 1. Прочитать [`docs/01_ARCHITECTURE_RU.md`](docs/01_ARCHITECTURE_RU.md), [`docs/02_ADR_RU.md`](docs/02_ADR_RU.md), [`docs/07_GLOSSARY_RU.md`](docs/07_GLOSSARY_RU.md).
@@ -24,7 +24,6 @@ AIR находится на стадии проектирования. Архи�
 3. Для будущего этапа есть [`docs/10_IMPLEMENTATION_DRAFT_TZ_RU.md`](docs/10_IMPLEMENTATION_DRAFT_TZ_RU.md). Статус DRAFT: само по себе не разрешает разработчику определить спорную Schema v1 или изменить Shared Policy.
 4. При чтении результатов пользоваться цепочками [`docs/04_EVIDENCE_CHAINS_RU.md`](docs/04_EVIDENCE_CHAINS_RU.md) и [`docs/03_USE_CASES_RU.md`](docs/03_USE_CASES_RU.md), а решения о reuse проверять по [`docs/06_REUSE_MATRIX_RU.md`](docs/06_REUSE_MATRIX_RU.md).
 
-Если внешние стили не применились, откройте [**проверку загрузки CSS/JS**](docs/00_RENDER_TEST_RU.md).
 
 Схемы и настройка визуального чтения: [**Визуальное оформление MdStyled**](docs/README_VISUAL_PREVIEW_RU.md).
 
@@ -59,8 +58,8 @@ AIR находится на стадии проектирования. Архи�
 - Семантика Schema v1 (`parameters`, `permit`, `applies_if`, unknown facts, literals, `require operation`) **DEFERRED**.
 - Две линии ТЗ существуют одновременно: эксперименты = CURRENT; реализация = DRAFT.
 
-## Исходные материалы и история
+## Происхождение материалов и ограничения
 
-Исходный архив `agents-policies-self-contained-handoff-2026-10-18-v2(1).zip` содержал первичные JSONL, большие архивы evidence, старые policies и исторические handoff. В текущем рабочем дереве сохранены сжатые наблюдения и адреса источников, без дублирования private raw logs. Историческая Git-история из handoff реконструирована; она не равна доказательству live Windows runtime. Восстановление прошлого evidence проводится по конкретному спорному утверждению.
+Репозиторий содержит текущие архитектурные решения, план экспериментов, обзор исторических наблюдений и патчи, перечисленные выше. Исторические наблюдения собраны в [`docs/04_EVIDENCE_CHAINS_RU.md`](docs/04_EVIDENCE_CHAINS_RU.md). Первичные журналы предыдущих запусков здесь не опубликованы: их результаты нельзя считать независимой проверкой AIR. История Git отражает развитие документов, а не результаты испытаний AIR.
 
 Запрещено в ходе экспериментального задания менять production-проекты, существующие native Agent Profiles, Shared Policy или глобальный bootstrap без явного разрешения, снимка состояния и rollback. Семь unapplied архитектурных предложений нельзя считать утверждёнными только потому, что они лежат в Git.

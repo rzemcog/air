@@ -50,13 +50,13 @@ AIR должен обеспечивать source selection, разрешение
 
 Schema Definitions в коде AIR; authored files используют `format`. Vocabulary freely declares namespaces, version, operation/fact symbols and typed params, human-readable `description` для каждого экспортируемого символа/параметра. Rule c `modality`, `operation`, `parameters?`, `applies_if?`, `description?`, `key?` (необязателен). `subject`, `target`, BDD и обязательные IDs не включать. Type universe минимален и versioned. Unknown symbols/type mismatch/duplicate namespaces/invalid predicates → deterministic validation error.
 
-Semantic resolver только для unresolved natural-language relations. Он не может писать canonical sources, invent symbols, повышать authority и переписывать text вольно. Resolution Overlay internal; assembler выдаёт человеку проверяемый `effective.md`, а модели только реальный scoped Delivery Payload. Manual correction должна быть inspectable/explicit, не скрытое изменение cache.
+Semantic resolver только для unresolved natural-language relations. Он не может писать canonical sources, invent symbols, повышать authority и переписывать text вольно. Resolution Overlay internal; assembler выдаёт человеку проверяемое effective-представление, а модели только реальный scoped Delivery Payload. Manual correction должна быть inspectable/explicit, не скрытое изменение cache.
 
 **Open schema cases** (`permit` vs `forbid`, missing runtime fact, параметры под оператором, условная семантика) требуют до финального acceptance отдельного мини-RFC с 2–3 конфликтными примерами и user consent. На этот счёт нет разрешения придумывать ограничения от себя только ради прохождения тестов.
 
 ## 4. Storage, performance, security: проектные требования
 
-Authored source/config в доверенном указанном пути (candidate `~/.agents/policies.toml`), runtime data в `%LOCALAPPDATA%/AIR` либо `PLUGIN_DATA` при доказанном host контракте. `cache/gpa`, `cache/conflicts`, `sessions`, `trace`. `sessions` не удаляется при cache eviction. File locking/atomic writes + checksum + generation + bounded trace + privacy and safe path resolution. No network/telemetry кроме отдельно разрешённого API запроса выбранного cheap resolver; не хранить raw user prompt в trace.
+Authored source/config в доверенном пути, подтверждённом Host Adapter, runtime data в `%LOCALAPPDATA%/AIR` либо `PLUGIN_DATA` при доказанном host контракте. `cache/gpa`, `cache/conflicts`, `sessions`, `trace`. `sessions` не удаляется при cache eviction. File locking/atomic writes + checksum + generation + bounded trace + privacy and safe path resolution. No network/telemetry кроме отдельно разрешённого API запроса выбранного cheap resolver; не хранить raw user prompt в trace.
 
 Измерять: hook median/p95 latency на небольшой тестовой выборке, invocation counts, output bytes/tokens, injected scopes, cache hit ratio, resolver calls, model-visible canary completeness и task compliance отдельно. Performance threshold не изобретать без baseline; дать сравнительные числа и предложить bounded budgets.
 
@@ -97,9 +97,9 @@ Authored source/config в доверенном указанном пути (cand
 
 ## 7. Ожидаемые артефакты реализации
 
-Provide source tree, pinned dependencies, tests/scripts, minimal synthetic test workspace, machine-readable schema + sample vocab/policies, `REUSE_DECISION.md`, `HOST_PROBES.md` (version, stdout receipts, screenshots/traces if relevant), `DELIVERY_MATRIX.md`, explicit `BLOCKERS.md`, migration diffs к согласованным sources/profiles/bootstrap (без изменения Shared Policy на текущем шаге), `ROLLBACK.md`, cache sample, policy trace sample redacted. No surprises hidden in global user state. Report `DONE/PARTIAL/BLOCKED` criterion by criterion; include commands/evidence and failures. If blocked, continue all independent implementation rather than looping on one hook.
+Предоставить исходники, pinned dependencies, tests/scripts, минимальный synthetic workspace, схемы и примеры политик, отчёт о reuse, результаты host probes (версия, receipts, допустимые traces), матрицу доставки, перечень blockers, согласованные migration diffs (без изменения Shared Policy на текущем шаге), план rollback, пример cache и обезличенный policy trace. No surprises hidden in global user state. Report `DONE/PARTIAL/BLOCKED` criterion by criterion; include commands/evidence and failures. If blocked, continue all independent implementation rather than looping on one hook.
 
-Из списка миграций исключена автоматическая правка `agent-policy.md`: текущий пользователь её отложил. Действующий адаптированный skill находится в [`skills/instruction-conflict-resolution`](../skills/instruction-conflict-resolution/SKILL.md) и подлежит integration tests; остальные migrations требуют одобрения и rollback.
+Из списка миграций исключена автоматическая правка действующего Shared Policy: текущий пользователь её отложил. Действующий адаптированный skill находится в [`skills/instruction-conflict-resolution`](../skills/instruction-conflict-resolution/SKILL.md) и подлежит integration tests; остальные migrations требуют одобрения и rollback.
 
 ## 8. План реализации ПОСЛЕ архитектурных решений
 
