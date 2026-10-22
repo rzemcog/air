@@ -65,10 +65,7 @@ for wanted in ['HANDOFF_CURRENT_RU.md', 'skills/mdstyled-documentation/SKILL.md'
         errors.append(f'missing MdStyled workflow/handoff: {wanted}')
 if (root / 'docs/mdstyled.config.json').exists():
     errors.append('duplicated MdStyled config (prefer @style/@script only)')
-# MdStyled 1.0.1 creates .mdstyled-root without the unsupported @page directive.
-for p in [root / 'README.md', *(root / 'docs').glob('*.md')]:
-    if re.search(r'(?m)^<!-- @page:', p.read_text(encoding='utf-8')):
-        errors.append(f'unsupported MdStyled @page directive: {p.relative_to(root)}')
+# MdStyled supports @page and creates an optional nested root. Do not ban it.
 css_text = (root / 'docs/air.css').read_text(encoding='utf-8')
 if '.mdstyled-root.air-docs' in css_text:
     errors.append('CSS incorrectly targets .mdstyled-root.air-docs')
